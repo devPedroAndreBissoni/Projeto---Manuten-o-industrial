@@ -1,5 +1,5 @@
 # Projeto---Manutenção-industrial
-Nosso projeto, visa criar um sistema capaz de manutenção industrial, para a área de brinquedos, o escopo do nosso projeto busca gerenciar máquinas, de modo que todos saibam se a máquina está funcionando ou precisa de suporte, lembrando que esse sistema possui permissões diferentes para cada um dos seguintes cargos: funcionário, gerente e administrador.
+Nosso projeto visa criar um sistema capaz de manutenção industrial para a área de brinquedos. O escopo do nosso projeto busca gerenciar máquinas, de modo que todos saibam se a máquina está funcionando ou precisa de suporte. Lembrando que esse sistema possui permissões diferentes para cada um dos seguintes cargos: funcionário, gerente e administrador.
 
 *Sendo possível para o funcionário: listar e atualizar máquinas e produtos.
 
