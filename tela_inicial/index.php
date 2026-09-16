@@ -6,6 +6,7 @@
     <title>Tela-inicial</title>
 </head>
 <body>
+    <a href="../tela_login/index.php">login</a>
     <div class="">
         <div class="retangulo">
             <div class="parte2">
