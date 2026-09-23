@@ -8,9 +8,12 @@
 
 </head>
 <body>
+        <div class = "brand">
+            <img src="img/logo.png" alt="Kidzy Brinquedos" class="logo"><!--classe da logo-->
+        </div>
 
 <div class="container">
-
+    
         <h2>Bem-vindo à Kidzy!</h2>
    
     <form class="login" action="salvar.php" method="POST">

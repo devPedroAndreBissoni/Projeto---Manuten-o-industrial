@@ -3,14 +3,14 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            min-height: 50%; /* Ocupa 100% da altura da tela */
+            min-height: 100%; /* Ocupa 100% da altura da tela */
             padding: 0;
         }
 
         /* Estilo do corpo da página (Fundo e centralização) */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8;
+            background-color: #FEF6DD;
             display: flex;
             justify-content: left;
             align-items: center;
@@ -27,8 +27,8 @@
             padding: 35px 40px;
             border-radius: 12px;
             width: 100%;
-            max-width: 30vw;
-            min-height: 30vh;
+            max-width: 50vw;
+            min-height: 100vh;
         }
 
         /* Título */
@@ -100,4 +100,10 @@
         /* Efeito ao clicar no botão */
         button[type="submit"]:active {
             transform: scale(0.98);
+        }
+        /* Logo */
+        .logo{
+            justify-content: end;
+            align-items: end;
+            min-height: 100vh;
         }
