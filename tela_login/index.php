@@ -9,12 +9,12 @@
 </head>
 <body>
         <div class = "brand">
-            <img src="img/logo.png" alt="Kidzy Brinquedos" class="logo"><!--classe da logo-->
+            <img src="img/logo2.png" alt="Kidzy Brinquedos" class="logo"><!--classe da logo-->
         </div>
 
 <div class="container">
     
-        <h2>Bem-vindo à Kidzy!</h2>
+        <h2 class="titulo">Bem-vindo à Kidzy!</h2>
    
     <form class="login" action="salvar.php" method="POST">
 
@@ -27,8 +27,6 @@
             <input type="text" id="senha" name="senha" required>
         </div>
             <button type="submit">Entrar</button>
-
-    
     </form>
 
 </div>
