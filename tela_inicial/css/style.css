@@ -335,3 +335,35 @@ input {
     background: var(--creme);
     box-shadow: 0 20px 60px rgba(0, 0, 0, .25);
 }
+
+.search-box h2 {
+    margin: 0 0 22px;
+    color: var(--laranja);
+}
+
+.close-search {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    border: 0;
+    background: transparent;
+    font-size: 34px;
+    cursor: pointer;
+}
+
+.search-field input {
+    flex: 1;
+    min-width: 0;
+    padding: 13px 15px;
+    border: 2px solid var(--dourado);
+    border-radius: 12px;
+}
+
+.search-field button {
+    border: 0;
+    padding: 0, 20px;
+    border-radius: 12px;
+    background: var(--azescuro);
+    color: var(--branco);
+    cursor: pointer;
+}

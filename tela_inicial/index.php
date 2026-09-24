@@ -73,8 +73,8 @@
 
 </main>
 
-<div class = "search modal" id="searchModal" aria-hidden="true"> <!--Modal de Busca-->
-    <div class="search box" role="dialog" aria-modal="true" aria-labelledby="searchTitle">
+<div class = "search-modal" id="searchModal" aria-hidden="true"> <!--Modal de Busca-->
+    <div class="search-box" role="dialog" aria-modal="true" aria-labelledby="searchTitle">
         <button class="close-search" type="button" aria-label="Fechar">x</button>
         <h2 id="searchTitle">Pesquisar</h2>
 
