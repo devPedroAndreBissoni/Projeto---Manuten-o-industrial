@@ -244,11 +244,11 @@ input {
 
 .proposal-image {
     position: relative;
-    z-index: 1;
+    /* z-index: 1; */
     min-width: 0;
     min-height: 0;
     padding: 22px 0 22px 28px ;
-    border-radius: 58px 42px 42px 58px;
+    border-radius: 58px 0 0 58px;
     background: var(--bege);
 }
 
@@ -256,14 +256,14 @@ input {
     content: "";
     position: absolute;
     z-index: 6;
-    top: 50px;
+    top: 0;
     right: -20px;   /* negativo = empurra pra fora, metade da largura do ladrilho (42px) */
     bottom: 0;
     width: 42px;
     background:
         radial-gradient(
             circle at 0 25px,
-            var(--laranja) 0 40px,
+            var(--bege) 0 40px,
             transparent 41px
         ) repeat-y;
     background-size: 60px 50px;
