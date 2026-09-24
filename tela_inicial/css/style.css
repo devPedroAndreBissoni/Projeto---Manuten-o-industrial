@@ -234,4 +234,104 @@ input {
     width: min(760px, 58vw);
     min-height: clamp(340px, 43vh, 440px);
     
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+
+    border-radius: 58px;
+    overflow: visible;
+}
+
+.proposal-image {
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+    min-height: 0;
+    padding: 22px 0 22px 28px ;
+    border-radius: 58px 42px 42px 58px;
+    background: var(--bege);
+}
+
+.proposal-image::after {
+    content: "";
+    position: absolute;
+    z-index: 6;
+    top: 50px;
+    right: -20px;   /* negativo = empurra pra fora, metade da largura do ladrilho (42px) */
+    bottom: 0;
+    width: 42px;
+    background:
+        radial-gradient(
+            circle at 0 25px,
+            var(--laranja) 0 40px,
+            transparent 41px
+        ) repeat-y;
+    background-size: 60px 50px;
+    background-position: center;
+    pointer-events: none;
+    overflow: visible;
+}
+
+
+/*Posição do texto*/
+.proposal-content { 
+    position: relative;
+    z-index: 4;
+    min-width: 0;
+    min-height: 0;
+    margin-right: 10px;
+    padding:clamp(26px, 2.2vw, 38px) clamp(25px, 2.2vw, 38px)
+            clamp(24px, 2vw, 34px) clamp(44px, 3.4vw, 58px);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    
+    color: var(--branco);
+    background: var(--azul);
+    border-radius: 0 64px 64px 0;
+}
+
+/*Título*/
+.proposal-content h1 {
+    margin: 0 0 2px;
+    color: var(--branco);
+    font-family: Arial, Helvetica, sans-serif; /*Lembrar de pegar a extensão da fonte correta mais tarde*/
+    font-size: clamp(30px, 2.7vw, 42px);
+    font-weight: 400;
+    line-height: 1.05;
+}
+
+/*Texto*/
+.proposal-content p {
+    margin: 0;
+    color: var(--branco);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: clamp(17px, 1.62vw, 25 px);
+    line-height: 1.7;
+    font-weight: 400;
+}
+
+/*Modal de pesquisa*/
+
+.search-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: none;
+    place-items: center;
+    padding: 24px;
+    background: rgba(0, 0, 0, .55);
+}
+
+.search-modal.is-open {
+    display: grid;
+}
+
+.search-box {
+    position: relative;
+    width: min(600px, 100%);
+    padding: 36px;
+    background: var(--creme);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .25);
 }
