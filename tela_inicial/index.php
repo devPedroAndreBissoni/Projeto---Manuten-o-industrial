@@ -86,5 +86,6 @@
         <p id="searchResult">Digite algo para pesquisar.</p>
     </div>
 </div> 
+<script src="script.js"></script> <!--chamando o modal de busca, ou melhor o documento que possui os scripts-->
 </body>
 </html>
