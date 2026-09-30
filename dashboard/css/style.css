@@ -125,10 +125,10 @@ button {cursor: pointer;}
 }
 
 .content-head {
-    display: flex;
+    display: reverse;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 22px;
+    margin-bottom: 12px;
 }
 
 h1 {

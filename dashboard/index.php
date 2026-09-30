@@ -74,7 +74,7 @@ function icon($nome) {
                 <h1>Histórico</h1>
                 <button class="btn-primary"><?= icon('bell') ?> Novo Registro</button> <!--AQUI-->
             </div>
-
+            
         <!--Filtros-->
             <form class="filters">
                 <label class="search"><?= icon('lupa') ?> <!--AQUI-->
