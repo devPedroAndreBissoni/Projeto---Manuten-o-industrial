@@ -1,10 +1,16 @@
 <?php
 
-$funcionarios = [
-    ['nome' => 'Ana', 'cargo' => 'funcionária', 'setor' => 'Máquinas'], //URGENTEEEE TROCAR PELO BANCO ASSIM QUE POSSÍVEL
-    ['nome' => 'Pedro', 'cargo'=> 'funcionário', 'setor' => 'Manutenção'],
-    ['nome' => 'Eduardo', 'cargo' => 'Gerente', 'setor' => 'Manutenção'],
-];
+require_once 'conexao.php';
+
+$sql = "SELECT f.nome_funcionario AS nome,
+               c.nome_cargo       AS cargo,
+               s.nome_setor       AS setor
+        FROM funcionario f
+        LEFT JOIN cargo c ON c.id_cargo = f.idCargo
+        LEFT JOIN setor s ON s.id_setor = f.idSetor
+        ORDER BY f.nome_funcionario";
+
+$funcionarios = $pdo->query($sql)->fetchAll();
 
 $menu = [ //array do menu //aqui
     [
@@ -12,7 +18,7 @@ $menu = [ //array do menu //aqui
         "icone" => "img/historico.svg"
     ], 
     [
-        "nome" => 'Máquinas e Equipamentos',
+        "nome" => 'Máq. e Equip.',
         "icone" => "img/maquinas.svg"
     ],
     [
@@ -30,19 +36,9 @@ $menu = [ //array do menu //aqui
 ];
 
 
-function icon($nome) {
-    // 1) ícones inline (os que já estão no array)
-    $p = [
-        'bell' => '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>',
-    ];
-    if (isset($p[$nome])) {
-        return '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' . $p[$nome] . '</svg>';
-    }
-}
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -68,7 +64,12 @@ function icon($nome) {
                         <span class="icon-user"></span>
                     </span>
                 </button>
-                <button class="icon-btn" aria-label="Notificações"><?= icon('bell') ?></button>
+                <button class="icon-btn" aria-label="Notificações">
+                    <img src="img/sino.svg" alt="sininho">
+                </button>
+                <button class="icon-btn" aria-label="Configurações">
+                    <img src="img/engrenagem.svg" alt="Config">
+                </button>
             </div>
         </header>
 
@@ -120,12 +121,12 @@ function icon($nome) {
             <thead>
                 <tr><th>Nome</th><th>Cargo/Permissão</th><th>Setor</th><th class="center">Ações</th></tr>
             </thead>
-            <body>
+            <tbody>
                 <?php foreach ($funcionarios as $f): ?>
                 <tr>
                     <td><?= htmlspecialchars($f['nome']) ?></td>
-                    <td><?= htmlspecialchars($f['cargo']) ?></td>
-                    <td><?= htmlspecialchars($f['setor']) ?></td>
+                    <td><?= htmlspecialchars($f['cargo'] ?? '-') ?></td>
+                    <td><?= htmlspecialchars($f['setor'] ?? '-') ?></td>
                     <td class="actions">
                         <button aria-label="Editar">
                             <img src="img/editar.svg" alt="editar" class="edit">
@@ -141,7 +142,7 @@ function icon($nome) {
                     </td>
                 </tr>
                 <?php endforeach; ?>
-            </body>
+            </tbody>
         </table>
     </main>
 </div>
