@@ -48,8 +48,11 @@ button {cursor: pointer;}
     flex: 0 0 auto;
     display: flex;
     align-items: center;
-    width: clamp(72px, 15vw, 500px);
-    height: clamp(72px, 15vw, 500px);
+    width: clamp(500px, 1vw, 800px);
+    height: clamp(72px, 1vw, 500px);
+    padding-right: 10px;
+    align-items: left;
+    justify-content: space-evenly;
 }
 
 .topbar-right{
@@ -70,6 +73,48 @@ button {cursor: pointer;}
     width: 36px;
     height: 36px;
     border-radius: 50%;
+}
+
+.icon-circle {
+    position: relative;
+    flex: 0 0 auto;
+    width: clamp(54px, 4.7vw, 72px);
+    height: clamp(54px, 4.7vw, 72px);
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--dourado );
+    border-radius: 50%;
+    background: var(--amarelo);
+    color: #000000;
+}
+
+.btn-login { /*Isso muda o fundo para circular que fica da própria imagem*/
+    background: var(--amarelo);
+    border: 0;
+    border-radius: 50%;
+    padding: 0;
+    cursor: pointer;
+}
+
+.icon-user {  /*Ícone login/usuário, essa primeira parte é a cabeça*/
+    width: 45%;
+    height: 45%;
+    border: 3px solid #000;
+    border-radius: 50%;
+    position: relative;
+    transform: translateY(-10%);
+}
+
+.icon-user::after { /*Parte do ícone do usuário*/
+    content: "";
+    position: absolute;
+    width: 135%;
+    height: 75%;
+    left: -27%;
+    bottom: -86%;
+    border: 3px, solid #000;
+    border-bottom: 0;
+    border-radius: 45% 45% 0 0;
 }
 
 .icon-btn {
@@ -98,6 +143,8 @@ button {cursor: pointer;}
     color: var(--branco);
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
+    align-items: left;
 }
 
 .side-item {
@@ -247,6 +294,9 @@ td {
     color: var(--laranja);
 }
 
+.hist {
+    color: var(--branco);
+}
 /*Celular*/
 @media (max-width: 720px) {
     .body {grid-template-columns: 1fr;}

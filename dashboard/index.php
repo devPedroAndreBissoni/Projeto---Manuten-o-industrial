@@ -6,12 +6,27 @@ $funcionarios = [
     ['nome' => 'Eduardo', 'cargo' => 'Gerente', 'setor' => 'Manutenção'],
 ];
 
-$menu = [
-    ['Histórico', 'relogio', true], //array do menu //aqui
-    ['Máquinas e Equipamentos','maquinas', false],
-    ['Funcionários', 'pessoas', false],
-    ['Ordens de Serviço', 'maleta', false],
-    ['Produtos', 'produto', false],
+$menu = [ //array do menu //aqui
+    [
+        "nome" => "Histórico",
+        "icone" => "img/historico.svg"
+    ], 
+    [
+        "nome" => 'Máquinas e Equipamentos',
+        "icone" => "img/maquinas.svg"
+    ],
+    [
+        "nome" => 'Funcionários',
+        "icone" => "img/pessoas.svg"       
+    ],
+    [
+        "nome" => 'Ordens de Serviço',
+        "icone" => "img/maleta.svg"
+],
+    [
+        "nome" => 'Produtos',
+        "icone" => "img/caixa.svg"
+    ],
 ];
 
 
@@ -24,15 +39,6 @@ function icon($nome) {
         return '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' . $p[$nome] . '</svg>';
     }
-
-    // 2) ícones em arquivo: img/icons/NOME.svg
-    $nome    = basename($nome);                                   // segurança: bloqueia "../"
-    $caminho = __DIR__ . '/img/icons/' . $nome . '.svg';         // onde o PHP procura no disco
-    if (is_file($caminho)) {
-        return '<img class="icon" src="img/icons/' . $nome . '.svg" alt="">';  // o que o navegador carrega
-    }
-
-    return '';   // ícone inexistente: não quebra a página
 }
 ?>
 <!DOCTYPE html>
@@ -47,8 +53,9 @@ function icon($nome) {
 <div class="page">
             <!--Topo-->
         <header class="topbar">
-            <div class = "brand">
-                <img src="img/logo-kidzy-vetorizado.svg" alt="Kidzy Brinquedos" class="logo"><!--classe da logo-->
+            <div class = "brand"> <!--classe da logo-->
+                <img src="img/kidzy-logo.svg" alt="Kidzy Brinquedos" class="logo">
+                <h1>KIDZY Brinquedos</h1>
             </div>
 
             <div class="topbar-right">
@@ -56,6 +63,11 @@ function icon($nome) {
                     <span class="avatar"></span>
                     <span><strong>teste</strong>oi</span>
                 </div>
+                <button class="btn-login" type="button" data-action="login"> <!--Ícone do login/Usuário-->
+                    <span class="icon-circle" aria-hidden="true">
+                        <span class="icon-user"></span>
+                    </span>
+                </button>
                 <button class="icon-btn" aria-label="Notificações"><?= icon('bell') ?></button>
             </div>
         </header>
@@ -63,30 +75,43 @@ function icon($nome) {
     <!--Corpo-->
     <div class="body">
         <nav class = "sidebar"> <!--Parte lateral-->
-        <?php foreach ($menu as [$texto, $ico, $ativo]): ?> <!--Aqui puxei o array do menu lá de cima-->
-                <a href="#" class="side-item <?= $ativo ? 'active' : '' ?>">
-                    <?= icon($ico) ?><span><?= $texto ?></span>
+        <?php foreach ($menu as $item): ?> <!--Aqui puxei o array do menu lá de cima-->
+                <a href="#" class="side-item">
+                    <img src="<?= $item['icone'] ?>" alt="">
+                    <span><?= $item['nome'] ?></span>
                 </a>
-            <?php endforeach; ?>
+        <?php endforeach; ?>
         </nav>
         <main class ="content">
             <div class="content head">
                 <h1>Histórico</h1>
-                <button class="btn-primary"><?= icon('bell') ?> Novo Registro</button> <!--AQUI-->
+                <button class="btn-primary">
+                    <span class = "icon-plus">
+                        <img src="img/plus.svg" alt="+" class="plus">
+                    </span>
+                    <h1>Novo Registro</h1>
+                </button>
             </div>
             
         <!--Filtros-->
             <form class="filters">
-                <label class="search"><?= icon('lupa') ?> <!--AQUI-->
-                    <input type="text" placeholder="Buscar por Nome...">
+                <label class="search">
+                    <img src="img/lupa.svg" alt="lupa" class="lupa">
+                        <input type="text" placeholder="Buscar por Nome...">
                 </label>
 
                 <label class="field"> Setor:
-                    <select><option> Produção</option></select>
+                    <select>
+                        <option value="1"> Produção</option>
+                    </select>
                 </label>
 
                 <label class = "field"> Cargo:
-                    <select><option>[Técnico]</option></select>
+                    <select name ="cargo" id="cargo">
+                        <option value="1">[Funcionário]</option>
+                        <option value="2">[Gerente]</option>
+                        <option value="3">[Administrador]</option>
+                    </select>
                 </label>
             </form>
 
@@ -102,9 +127,17 @@ function icon($nome) {
                     <td><?= htmlspecialchars($f['cargo']) ?></td>
                     <td><?= htmlspecialchars($f['setor']) ?></td>
                     <td class="actions">
-                        <button aria-label="Editar"><?= icon('editar') ?></button> 
-                        <button aria-label="Documento"><?= icon('listar') ?></button> 
-                        <button aria-label="Histórico"><?= icon('historico') ?></button> 
+                        <button aria-label="Editar">
+                            <img src="img/editar.svg" alt="editar" class="edit">
+                        </button> 
+
+                        <button aria-label="Documento">
+                            <img src="img/listar.svg" alt="detalhes" class="listar">
+                        </button> 
+
+                        <button aria-label="Histórico">
+                            <img src="img/relogio.svg" alt="relogio" class="relogio">
+                        </button> 
                     </td>
                 </tr>
                 <?php endforeach; ?>
