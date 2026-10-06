@@ -16,6 +16,7 @@ body {
     justify-content: left;
     align-items: center;
     flex-direction: row-reverse;
+    overflow: hidden;
 
 
 }
@@ -111,6 +112,9 @@ button[type="submit"]:active {
 .logo {
     justify-content: end;
     align-items: end;
-    min-height: 100vh;
+    height: 100vh;
     width: 50vw;
+}
+.brand {
+    height: 100vh;
 }
