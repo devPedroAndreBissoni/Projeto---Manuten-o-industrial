@@ -16,15 +16,15 @@
     
         <h2 class="titulo">Bem-vindo à Kidzy!</h2>
    
-    <form class="login" action="login.php" method="POST">
+    <form class="login" action="conectar.php" method="POST">
 
         <div class="campo">
             <label for="email">Digite o seu email:</label>
             <input type="email" id="email" name="email" required>
         </div>
         <div class="campo">
-            <label for="sobrenome">Digite a sua Senha:</label>
-            <input type="password" id="senha" name="senha" required>
+            <label for="senha">Digite a sua Senha:</label>
+            <input type="senha" id="senha" name="senha" required>
         </div>
             <button type="submit">Entrar</button>
     </form>

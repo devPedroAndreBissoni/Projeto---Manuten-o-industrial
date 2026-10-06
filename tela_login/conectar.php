@@ -3,15 +3,14 @@
 session_start();
 
 // Dados do banco
-$host = "localhost";
-$usuario = "root";
-$senha = "";
-$banco = "db_kdz";
+$host   = "localhost";
+$user   = "root";
+$pass   = "";
+$banco  = "db_kdz";
 
 // Conexão com o banco
-$conn = mysqli_connect($host, $usuario, $senha, $banco);
+$conn = mysqli_connect($host, $user, $pass, $banco);
 
-// Verifica se a conexão funcionou
 if (!$conn) {
     die("Erro na conexão com o banco: " . mysqli_connect_error());
 }
@@ -19,75 +18,83 @@ if (!$conn) {
 // Verifica se o formulário foi enviado
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    // Pega os dados digitados no formulário
-    $email = $_POST["email"];
+    $email = trim($_POST["email"]);
     $senha_digitada = $_POST["senha"];
 
-    // Procura o usuário pelo email
-    $sql = "SELECT id, email, senha, permissao FROM usuarios WHERE email = ?";
+    // Cargo => página de destino
+    $destinos = [
+        "funcionario"   => "../dashboardf/index.php",
+        "gerente"       => "../dashboardg/index.php",
+        "administrador" => "../dashboard/index.php"
+    ];
 
-    // Prepara a consulta
+    // 1) Procura em funcionario (funcionário e gerente)
+    $sql = "SELECT f.id_funcionario AS id, f.nome_funcionario AS nome,
+                   f.email_funcionario AS email, f.senha_funcionario AS senha_hash,
+                   c.nome_cargo AS cargo
+            FROM funcionario f
+            LEFT JOIN cargo c ON c.id_cargo = f.idCargo
+            WHERE f.email_funcionario = ?";
+
     $stmt = mysqli_prepare($conn, $sql);
-
-    // Coloca o email no ?
     mysqli_stmt_bind_param($stmt, "s", $email);
-
-    // Executa a consulta
     mysqli_stmt_execute($stmt);
+    $dados = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+    mysqli_stmt_close($stmt);
 
-    // Pega o resultado
-    $resultado = mysqli_stmt_get_result($stmt);
+    // 2) Se não achou, procura em administrador
+    if (!$dados) {
+        $sql = "SELECT id_administrador AS id, nome_administrador AS nome,
+                       email_administrador AS email, senha_administrador AS senha_hash,
+                       'administrador' AS cargo
+                FROM administrador
+                WHERE email_administrador = ?";
 
-    // Verifica se encontrou o usuário
-    if (mysqli_num_rows($resultado) == 1) {
+        $stmt = mysqli_prepare($conn, $sql);
+        mysqli_stmt_bind_param($stmt, "s", $email);
+        mysqli_stmt_execute($stmt);
+        $dados = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+        mysqli_stmt_close($stmt);
+    }
 
-        // Pega os dados do usuário
-        $usuario = mysqli_fetch_assoc($resultado);
+    // 3) Valida
+    if (!$dados) {
 
-        // Verifica a senha
-        if (password_verify($senha_digitada, $usuario["senha"])) {
+        echo "Usuário não encontrado.";
 
-            // Guarda informações do usuário na sessão
-            $_SESSION["id"] = $usuario["id"];
-            $_SESSION["email"] = $usuario["email"];
-            $_SESSION["permissao"] = $usuario["permissao"];
+    } elseif (!password_verify($senha_digitada, $dados["senha_hash"] ?? "")) {
 
-            // Verifica a permissão
-            if ($usuario["permissao"] == "funcionario") {
-
-                header("Location: funcionario.php");
-                exit();
-
-            } elseif ($usuario["permissao"] == "gerente") {
-
-                header("Location: gerente.php");
-                exit();
-
-            } elseif ($usuario["permissao"] == "administrador") {
-
-                header("Location: administrador.php");
-                exit();
-
-            } else {
-
-                echo "Permissão inválida.";
-            }
-
-        } else {
-
-            echo "Senha incorreta.";
-        }
+        echo "Senha incorreta.";
 
     } else {
 
-        echo "Usuário não encontrado.";
-    }
+        // Cargo sem acento e em minúsculo
+        $cargo = mb_strtolower(trim($dados["cargo"] ?? ""), "UTF-8");
+        $cargo = strtr($cargo, [
+            "á" => "a", "ã" => "a", "â" => "a",
+            "é" => "e", "ê" => "e", "í" => "i",
+            "ó" => "o", "ô" => "o", "õ" => "o",
+            "ú" => "u", "ç" => "c"
+        ]);
 
-    // Fecha a consulta
-    mysqli_stmt_close($stmt);
+        if (isset($destinos[$cargo])) {
+
+            session_regenerate_id(true);
+
+            $_SESSION["id"]    = $dados["id"];
+            $_SESSION["nome"]  = $dados["nome"];
+            $_SESSION["email"] = $dados["email"];
+            $_SESSION["cargo"] = $cargo;
+
+            header("Location: " . $destinos[$cargo]);
+            exit();
+
+        } else {
+            echo "Seu cargo não tem permissão de acesso.";
+        }
+    }
 }
 
-// Fecha a conexão
 mysqli_close($conn);
 
 ?>

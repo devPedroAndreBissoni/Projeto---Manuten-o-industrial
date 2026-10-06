@@ -10,3 +10,9 @@ abrirbtn.addEventListener("click", () =>
 fecharbtn.addEventListener ("click", () =>{
     modal.classList.remove("is-open");
 });
+
+const loginBtn = document.querySelector('[data-action="login"]');
+
+loginBtn.addEventListener("click", () => {
+    window.location.href = "../tela_login/index.php";
+});
