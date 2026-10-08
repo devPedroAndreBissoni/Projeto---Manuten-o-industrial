@@ -56,7 +56,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $dados = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
         mysqli_stmt_close($stmt);
     }
+    // 2.1) Se ainda não achou, procura em gerente
+    if (!$dados) {
+        $sql = "SELECT id_gerente AS id, nome_gerente AS nome,
+                       email_gerente AS email, senha_gerente AS senha_hash,
+                       'gerente' AS cargo
+                FROM gerente
+                WHERE email_gerente = ?";
 
+        $stmt = mysqli_prepare($conn, $sql);
+        mysqli_stmt_bind_param($stmt, "s", $email);
+        mysqli_stmt_execute($stmt);
+        $dados = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+        mysqli_stmt_close($stmt);
+    }
     // 3) Valida
     if (!$dados) {
 
