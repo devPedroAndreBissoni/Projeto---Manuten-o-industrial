@@ -1,441 +1,487 @@
--- MySQL dump 10.13  Distrib 8.0.38, for Win64 (x86_64)
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
 --
--- Host: localhost    Database: db_kdz
--- ------------------------------------------------------
--- Server version	8.0.39
+-- Host: 127.0.0.1
+-- Tempo de geração: 08/10/2026 às 15:34
+-- Versão do servidor: 10.4.32-MariaDB
+-- Versão do PHP: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*!40101 SET NAMES utf8mb4 */;
 
 --
--- Table structure for table `administrador`
+-- Banco de dados: `db_kdz`
 --
 
-DROP TABLE IF EXISTS `administrador`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `administrador`
+--
+
 CREATE TABLE `administrador` (
-  `id_administrador` int NOT NULL AUTO_INCREMENT,
-  `cpf_administrador` varchar(14) COLLATE utf8mb4_general_ci NOT NULL,
-  `nome_administrador` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `email_administrador` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `telefone_administrador` varchar(12) COLLATE utf8mb4_general_ci NOT NULL,
-  `senha_administrador` varchar(225) COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id_administrador`)
+  `id_administrador` int(11) NOT NULL,
+  `cpf_administrador` varchar(14) NOT NULL,
+  `nome_administrador` varchar(100) NOT NULL,
+  `email_administrador` varchar(100) NOT NULL,
+  `telefone_administrador` varchar(12) NOT NULL,
+  `senha_administrador` varchar(225) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `administrador`
+-- Despejando dados para a tabela `administrador`
 --
 
-LOCK TABLES `administrador` WRITE;
-/*!40000 ALTER TABLE `administrador` DISABLE KEYS */;
-/*!40000 ALTER TABLE `administrador` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `administrador` (`id_administrador`, `cpf_administrador`, `nome_administrador`, `email_administrador`, `telefone_administrador`, `senha_administrador`) VALUES
+(1, '11111111111', 'Admin Teste', 'admin@kdz.com', '41999990001', '$2b$12$BLjoVZQgYBnnAoy1Cw8/Vu0BLM8WSQEMvosyfYKIG32KS8apHyKDK'),
+(2, '11111111112', 'Admin Teste 2', 'admin2@kdz.com', '41999990002', '$2b$12$BLjoVZQgYBnnAoy1Cw8/Vu0BLM8WSQEMvosyfYKIG32KS8apHyKDK');
+
+-- --------------------------------------------------------
 
 --
--- Table structure for table `cargo`
+-- Estrutura para tabela `cargo`
 --
 
-DROP TABLE IF EXISTS `cargo`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `cargo` (
-  `id_cargo` int NOT NULL,
-  `tipo_cargo` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `nome_cargo` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id_cargo`)
+  `id_cargo` int(11) NOT NULL,
+  `tipo_cargo` varchar(50) NOT NULL,
+  `nome_cargo` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `cargo`
+-- Despejando dados para a tabela `cargo`
 --
 
-LOCK TABLES `cargo` WRITE;
-/*!40000 ALTER TABLE `cargo` DISABLE KEYS */;
-/*!40000 ALTER TABLE `cargo` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `cargo` (`id_cargo`, `tipo_cargo`, `nome_cargo`) VALUES
+(1, 'administrador', 'Administrador'),
+(2, 'gerente', 'Gerente'),
+(3, 'funcionario', 'Funcionario');
+
+-- --------------------------------------------------------
 
 --
--- Table structure for table `categoria`
+-- Estrutura para tabela `categoria`
 --
 
-DROP TABLE IF EXISTS `categoria`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `categoria` (
-  `id_categoria_brinquedo` int NOT NULL,
-  `tipo_categoria` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id_categoria_brinquedo`)
+  `id_categoria_brinquedo` int(11) NOT NULL,
+  `tipo_categoria` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
+-- --------------------------------------------------------
 
 --
--- Dumping data for table `categoria`
+-- Estrutura para tabela `funcionario`
 --
 
-LOCK TABLES `categoria` WRITE;
-/*!40000 ALTER TABLE `categoria` DISABLE KEYS */;
-/*!40000 ALTER TABLE `categoria` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `funcionario`
---
-
-DROP TABLE IF EXISTS `funcionario`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `funcionario` (
-  `id_funcionario` int NOT NULL,
-  `idCargo` int NOT NULL,
-  `idSetor` int NOT NULL,
-  `telefone_funcionario` varchar(12) COLLATE utf8mb4_general_ci NOT NULL,
-  `cpf_funcionario` varchar(14) COLLATE utf8mb4_general_ci NOT NULL,
-  `email_funcionario` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `nome_funcionario` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `senha_funcionario` varchar(225) COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id_funcionario`),
-  KEY `idCargo` (`idCargo`),
-  KEY `idSetor` (`idSetor`),
-  CONSTRAINT `funcionario_ibfk_1` FOREIGN KEY (`idCargo`) REFERENCES `cargo` (`id_cargo`),
-  CONSTRAINT `funcionario_ibfk_2` FOREIGN KEY (`idCargo`) REFERENCES `cargo` (`id_cargo`),
-  CONSTRAINT `funcionario_ibfk_3` FOREIGN KEY (`idSetor`) REFERENCES `setor` (`id_setor`),
-  CONSTRAINT `funcionario_ibfk_4` FOREIGN KEY (`idCargo`) REFERENCES `cargo` (`id_cargo`),
-  CONSTRAINT `funcionario_ibfk_5` FOREIGN KEY (`idSetor`) REFERENCES `setor` (`id_setor`)
+  `id_funcionario` int(11) NOT NULL,
+  `idCargo` int(11) NOT NULL,
+  `idSetor` int(11) NOT NULL,
+  `telefone_funcionario` varchar(12) NOT NULL,
+  `cpf_funcionario` varchar(14) NOT NULL,
+  `email_funcionario` varchar(100) NOT NULL,
+  `nome_funcionario` varchar(100) NOT NULL,
+  `senha_funcionario` varchar(225) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `funcionario`
+-- Despejando dados para a tabela `funcionario`
 --
 
-LOCK TABLES `funcionario` WRITE;
-/*!40000 ALTER TABLE `funcionario` DISABLE KEYS */;
-/*!40000 ALTER TABLE `funcionario` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `funcionario` (`id_funcionario`, `idCargo`, `idSetor`, `telefone_funcionario`, `cpf_funcionario`, `email_funcionario`, `nome_funcionario`, `senha_funcionario`) VALUES
+(1, 3, 1, '41977770001', '33333333331', 'funcionario@kdz.com', 'Funcionario Teste', '$2b$12$vW0GYTuYyffBe8UYa.ixQOEISkO7qAGqoZ/J4hiiRCAQebJkwjvHi'),
+(2, 2, 2, '41977770002', '33333333332', 'gerente.func@kdz.com', 'Gerente Teste (func)', '$2b$12$vW0GYTuYyffBe8UYa.ixQOEISkO7qAGqoZ/J4hiiRCAQebJkwjvHi'),
+(3, 1, 2, '41977770003', '33333333333', 'admin.func@kdz.com', 'Admin Teste (func)', '$2b$12$vW0GYTuYyffBe8UYa.ixQOEISkO7qAGqoZ/J4hiiRCAQebJkwjvHi');
+
+-- --------------------------------------------------------
 
 --
--- Table structure for table `gerencia_administrador_funcionario`
+-- Estrutura para tabela `gerencia_administrador_funcionario`
 --
 
-DROP TABLE IF EXISTS `gerencia_administrador_funcionario`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `gerencia_administrador_funcionario` (
-  `id_administrador_funcionario` int NOT NULL AUTO_INCREMENT,
-  `id_funcionario` int NOT NULL,
-  `id_administrador` int NOT NULL,
-  PRIMARY KEY (`id_administrador_funcionario`),
-  KEY `id_funcionario` (`id_funcionario`),
-  KEY `id_administrador` (`id_administrador`),
-  CONSTRAINT `gerencia_administrador_funcionario_ibfk_1` FOREIGN KEY (`id_funcionario`) REFERENCES `funcionario` (`id_funcionario`),
-  CONSTRAINT `gerencia_administrador_funcionario_ibfk_2` FOREIGN KEY (`id_administrador`) REFERENCES `administrador` (`id_administrador`),
-  CONSTRAINT `gerencia_administrador_funcionario_ibfk_3` FOREIGN KEY (`id_funcionario`) REFERENCES `funcionario` (`id_funcionario`),
-  CONSTRAINT `gerencia_administrador_funcionario_ibfk_4` FOREIGN KEY (`id_administrador`) REFERENCES `administrador` (`id_administrador`)
+  `id_administrador_funcionario` int(11) NOT NULL,
+  `id_funcionario` int(11) NOT NULL,
+  `id_administrador` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
+-- --------------------------------------------------------
 
 --
--- Dumping data for table `gerencia_administrador_funcionario`
+-- Estrutura para tabela `gerencia_administrador_maquina`
 --
 
-LOCK TABLES `gerencia_administrador_funcionario` WRITE;
-/*!40000 ALTER TABLE `gerencia_administrador_funcionario` DISABLE KEYS */;
-/*!40000 ALTER TABLE `gerencia_administrador_funcionario` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `gerencia_administrador_maquina`
---
-
-DROP TABLE IF EXISTS `gerencia_administrador_maquina`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `gerencia_administrador_maquina` (
-  `id_administrador_maquina` int NOT NULL AUTO_INCREMENT,
-  `id_administrador` int NOT NULL,
-  `id_maquina` int NOT NULL,
-  PRIMARY KEY (`id_administrador_maquina`),
-  KEY `id_administrador` (`id_administrador`),
-  KEY `id_maquina` (`id_maquina`),
-  CONSTRAINT `gerencia_administrador_maquina_ibfk_1` FOREIGN KEY (`id_administrador`) REFERENCES `administrador` (`id_administrador`),
-  CONSTRAINT `gerencia_administrador_maquina_ibfk_2` FOREIGN KEY (`id_maquina`) REFERENCES `máquina` (`id_maquina`),
-  CONSTRAINT `gerencia_administrador_maquina_ibfk_3` FOREIGN KEY (`id_administrador`) REFERENCES `administrador` (`id_administrador`),
-  CONSTRAINT `gerencia_administrador_maquina_ibfk_4` FOREIGN KEY (`id_maquina`) REFERENCES `máquina` (`id_maquina`)
+  `id_administrador_maquina` int(11) NOT NULL,
+  `id_administrador` int(11) NOT NULL,
+  `id_maquina` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
+-- --------------------------------------------------------
 
 --
--- Dumping data for table `gerencia_administrador_maquina`
+-- Estrutura para tabela `gerencia_administrador_produto`
 --
 
-LOCK TABLES `gerencia_administrador_maquina` WRITE;
-/*!40000 ALTER TABLE `gerencia_administrador_maquina` DISABLE KEYS */;
-/*!40000 ALTER TABLE `gerencia_administrador_maquina` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `gerencia_administrador_produto`
---
-
-DROP TABLE IF EXISTS `gerencia_administrador_produto`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `gerencia_administrador_produto` (
-  `id_administrador_produto` int NOT NULL AUTO_INCREMENT,
-  `id_administrador` int NOT NULL,
-  `id_produto` int NOT NULL,
-  PRIMARY KEY (`id_administrador_produto`),
-  KEY `id_administrador` (`id_administrador`),
-  KEY `id_produto` (`id_produto`),
-  CONSTRAINT `gerencia_administrador_produto_ibfk_1` FOREIGN KEY (`id_administrador`) REFERENCES `administrador` (`id_administrador`),
-  CONSTRAINT `gerencia_administrador_produto_ibfk_2` FOREIGN KEY (`id_produto`) REFERENCES `produto` (`id_produto`),
-  CONSTRAINT `gerencia_administrador_produto_ibfk_3` FOREIGN KEY (`id_administrador`) REFERENCES `administrador` (`id_administrador`),
-  CONSTRAINT `gerencia_administrador_produto_ibfk_4` FOREIGN KEY (`id_produto`) REFERENCES `produto` (`id_produto`)
+  `id_administrador_produto` int(11) NOT NULL,
+  `id_administrador` int(11) NOT NULL,
+  `id_produto` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
+-- --------------------------------------------------------
 
 --
--- Dumping data for table `gerencia_administrador_produto`
+-- Estrutura para tabela `gerencia_gerente_funcionario`
 --
 
-LOCK TABLES `gerencia_administrador_produto` WRITE;
-/*!40000 ALTER TABLE `gerencia_administrador_produto` DISABLE KEYS */;
-/*!40000 ALTER TABLE `gerencia_administrador_produto` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `gerencia_gerente_funcionario`
---
-
-DROP TABLE IF EXISTS `gerencia_gerente_funcionario`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `gerencia_gerente_funcionario` (
-  `id_gerente_funcionario` int NOT NULL AUTO_INCREMENT,
-  `id_funcionario` int DEFAULT NULL,
-  `id_gerente` int DEFAULT NULL,
-  PRIMARY KEY (`id_gerente_funcionario`),
-  KEY `id_funcionario` (`id_funcionario`),
-  KEY `id_gerente` (`id_gerente`),
-  CONSTRAINT `gerencia_gerente_funcionario_ibfk_1` FOREIGN KEY (`id_funcionario`) REFERENCES `funcionario` (`id_funcionario`),
-  CONSTRAINT `gerencia_gerente_funcionario_ibfk_2` FOREIGN KEY (`id_gerente`) REFERENCES `gerente` (`id_gerente`)
+  `id_gerente_funcionario` int(11) NOT NULL,
+  `id_funcionario` int(11) DEFAULT NULL,
+  `id_gerente` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
+-- --------------------------------------------------------
 
 --
--- Dumping data for table `gerencia_gerente_funcionario`
+-- Estrutura para tabela `gerencia_gerente_produto`
 --
 
-LOCK TABLES `gerencia_gerente_funcionario` WRITE;
-/*!40000 ALTER TABLE `gerencia_gerente_funcionario` DISABLE KEYS */;
-/*!40000 ALTER TABLE `gerencia_gerente_funcionario` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `gerencia_gerente_produto`
---
-
-DROP TABLE IF EXISTS `gerencia_gerente_produto`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `gerencia_gerente_produto` (
-  `id_gerente_produto` int NOT NULL AUTO_INCREMENT,
-  `id_produto` int NOT NULL,
-  `id_gerente` int NOT NULL,
-  PRIMARY KEY (`id_gerente_produto`),
-  KEY `gerencia_gerente_produto_ibfk_1` (`id_produto`),
-  KEY `gerencia_gerente_produto_ibfk_2` (`id_gerente`),
-  CONSTRAINT `gerencia_gerente_produto_ibfk_1` FOREIGN KEY (`id_produto`) REFERENCES `produto` (`id_produto`),
-  CONSTRAINT `gerencia_gerente_produto_ibfk_2` FOREIGN KEY (`id_gerente`) REFERENCES `gerente` (`id_gerente`)
+  `id_gerente_produto` int(11) NOT NULL,
+  `id_produto` int(11) NOT NULL,
+  `id_gerente` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
+-- --------------------------------------------------------
 
 --
--- Dumping data for table `gerencia_gerente_produto`
+-- Estrutura para tabela `gerente`
 --
 
-LOCK TABLES `gerencia_gerente_produto` WRITE;
-/*!40000 ALTER TABLE `gerencia_gerente_produto` DISABLE KEYS */;
-/*!40000 ALTER TABLE `gerencia_gerente_produto` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `gerente`
---
-
-DROP TABLE IF EXISTS `gerente`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `gerente` (
-  `id_gerente` int NOT NULL,
+  `id_gerente` int(11) NOT NULL,
   `nome_gerente` varchar(100) NOT NULL,
   `email_gerente` varchar(100) NOT NULL,
   `cpf_gerente` varchar(12) NOT NULL,
   `telefone_gerente` varchar(14) NOT NULL,
-  `senha_gerente` varchar(225) NOT NULL,
-  PRIMARY KEY (`id_gerente`)
+  `senha_gerente` varchar(225) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `gerente`
+-- Despejando dados para a tabela `gerente`
 --
 
-LOCK TABLES `gerente` WRITE;
-/*!40000 ALTER TABLE `gerente` DISABLE KEYS */;
-/*!40000 ALTER TABLE `gerente` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `gerente` (`id_gerente`, `nome_gerente`, `email_gerente`, `cpf_gerente`, `telefone_gerente`, `senha_gerente`) VALUES
+(1, 'Gerente Teste', 'gerente@kdz.com', '22222222221', '41988880001', '$2b$12$fEiAJXIlTREvjCnTkRQ9uulBDfMXsG1DJcfv8jq2Za1U/KlJKB3ZG'),
+(2, 'Gerente Teste 2', 'gerente2@kdz.com', '22222222222', '41988880002', '$2b$12$fEiAJXIlTREvjCnTkRQ9uulBDfMXsG1DJcfv8jq2Za1U/KlJKB3ZG');
+
+-- --------------------------------------------------------
 
 --
--- Table structure for table `manutenção`
+-- Estrutura para tabela `manutenção`
 --
 
-DROP TABLE IF EXISTS `manutenção`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `manutenção` (
-  `Chave` int NOT NULL,
-  `tipo_manutencao` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `descricao_manutencao` varchar(300) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  PRIMARY KEY (`Chave`)
+  `Chave` int(11) NOT NULL,
+  `tipo_manutencao` varchar(50) NOT NULL,
+  `descricao_manutencao` varchar(300) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
+-- --------------------------------------------------------
 
 --
--- Dumping data for table `manutenção`
+-- Estrutura para tabela `máquina`
 --
 
-LOCK TABLES `manutenção` WRITE;
-/*!40000 ALTER TABLE `manutenção` DISABLE KEYS */;
-/*!40000 ALTER TABLE `manutenção` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `máquina`
---
-
-DROP TABLE IF EXISTS `máquina`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `máquina` (
-  `id_maquina` int NOT NULL,
-  `tipo_maquina` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `nome_maquina` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `funcionamento_maquina` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id_maquina`)
+  `id_maquina` int(11) NOT NULL,
+  `tipo_maquina` varchar(50) NOT NULL,
+  `nome_maquina` varchar(100) NOT NULL,
+  `funcionamento_maquina` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
+-- --------------------------------------------------------
 
 --
--- Dumping data for table `máquina`
+-- Estrutura para tabela `produto`
 --
 
-LOCK TABLES `máquina` WRITE;
-/*!40000 ALTER TABLE `máquina` DISABLE KEYS */;
-/*!40000 ALTER TABLE `máquina` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `produto`
---
-
-DROP TABLE IF EXISTS `produto`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `produto` (
-  `id_produto` int NOT NULL,
-  `idCategoria` int NOT NULL,
-  `Nome_produto` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id_produto`),
-  KEY `idCategoria` (`idCategoria`),
-  CONSTRAINT `produto_ibfk_1` FOREIGN KEY (`idCategoria`) REFERENCES `categoria` (`id_categoria_brinquedo`),
-  CONSTRAINT `produto_ibfk_2` FOREIGN KEY (`idCategoria`) REFERENCES `categoria` (`id_categoria_brinquedo`),
-  CONSTRAINT `produto_ibfk_3` FOREIGN KEY (`idCategoria`) REFERENCES `categoria` (`id_categoria_brinquedo`)
+  `id_produto` int(11) NOT NULL,
+  `idCategoria` int(11) NOT NULL,
+  `Nome_produto` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
+-- --------------------------------------------------------
 
 --
--- Dumping data for table `produto`
+-- Estrutura para tabela `realiza`
 --
 
-LOCK TABLES `produto` WRITE;
-/*!40000 ALTER TABLE `produto` DISABLE KEYS */;
-/*!40000 ALTER TABLE `produto` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `realiza`
---
-
-DROP TABLE IF EXISTS `realiza`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `realiza` (
-  `id_maquina_manutenção` int NOT NULL AUTO_INCREMENT,
-  `Chave` int NOT NULL,
-  `id_maquina` int NOT NULL,
-  PRIMARY KEY (`id_maquina_manutenção`),
-  KEY `Chave` (`Chave`),
-  KEY `id_maquina` (`id_maquina`),
-  CONSTRAINT `realiza_ibfk_1` FOREIGN KEY (`id_maquina`) REFERENCES `máquina` (`id_maquina`),
-  CONSTRAINT `realiza_ibfk_2` FOREIGN KEY (`Chave`) REFERENCES `manutenção` (`Chave`),
-  CONSTRAINT `realiza_ibfk_3` FOREIGN KEY (`id_maquina`) REFERENCES `máquina` (`id_maquina`),
-  CONSTRAINT `realiza_ibfk_4` FOREIGN KEY (`Chave`) REFERENCES `manutenção` (`Chave`),
-  CONSTRAINT `realiza_ibfk_5` FOREIGN KEY (`id_maquina`) REFERENCES `máquina` (`id_maquina`)
+  `id_maquina_manutenção` int(11) NOT NULL,
+  `Chave` int(11) NOT NULL,
+  `id_maquina` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
+-- --------------------------------------------------------
 
 --
--- Dumping data for table `realiza`
+-- Estrutura para tabela `setor`
 --
 
-LOCK TABLES `realiza` WRITE;
-/*!40000 ALTER TABLE `realiza` DISABLE KEYS */;
-/*!40000 ALTER TABLE `realiza` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `setor`
---
-
-DROP TABLE IF EXISTS `setor`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `setor` (
-  `id_setor` int NOT NULL,
-  `nome_setor` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id_setor`)
+  `id_setor` int(11) NOT NULL,
+  `nome_setor` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `setor`
+-- Despejando dados para a tabela `setor`
 --
 
-LOCK TABLES `setor` WRITE;
-/*!40000 ALTER TABLE `setor` DISABLE KEYS */;
-/*!40000 ALTER TABLE `setor` ENABLE KEYS */;
-UNLOCK TABLES;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+INSERT INTO `setor` (`id_setor`, `nome_setor`) VALUES
+(1, 'Atendimento'),
+(2, 'Manutenção');
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+--
+-- Índices para tabelas despejadas
+--
+
+--
+-- Índices de tabela `administrador`
+--
+ALTER TABLE `administrador`
+  ADD PRIMARY KEY (`id_administrador`);
+
+--
+-- Índices de tabela `cargo`
+--
+ALTER TABLE `cargo`
+  ADD PRIMARY KEY (`id_cargo`);
+
+--
+-- Índices de tabela `categoria`
+--
+ALTER TABLE `categoria`
+  ADD PRIMARY KEY (`id_categoria_brinquedo`);
+
+--
+-- Índices de tabela `funcionario`
+--
+ALTER TABLE `funcionario`
+  ADD PRIMARY KEY (`id_funcionario`),
+  ADD KEY `idCargo` (`idCargo`),
+  ADD KEY `idSetor` (`idSetor`);
+
+--
+-- Índices de tabela `gerencia_administrador_funcionario`
+--
+ALTER TABLE `gerencia_administrador_funcionario`
+  ADD PRIMARY KEY (`id_administrador_funcionario`),
+  ADD KEY `id_funcionario` (`id_funcionario`),
+  ADD KEY `id_administrador` (`id_administrador`);
+
+--
+-- Índices de tabela `gerencia_administrador_maquina`
+--
+ALTER TABLE `gerencia_administrador_maquina`
+  ADD PRIMARY KEY (`id_administrador_maquina`),
+  ADD KEY `id_administrador` (`id_administrador`),
+  ADD KEY `id_maquina` (`id_maquina`);
+
+--
+-- Índices de tabela `gerencia_administrador_produto`
+--
+ALTER TABLE `gerencia_administrador_produto`
+  ADD PRIMARY KEY (`id_administrador_produto`),
+  ADD KEY `id_administrador` (`id_administrador`),
+  ADD KEY `id_produto` (`id_produto`);
+
+--
+-- Índices de tabela `gerencia_gerente_funcionario`
+--
+ALTER TABLE `gerencia_gerente_funcionario`
+  ADD PRIMARY KEY (`id_gerente_funcionario`),
+  ADD KEY `id_funcionario` (`id_funcionario`),
+  ADD KEY `id_gerente` (`id_gerente`);
+
+--
+-- Índices de tabela `gerencia_gerente_produto`
+--
+ALTER TABLE `gerencia_gerente_produto`
+  ADD PRIMARY KEY (`id_gerente_produto`),
+  ADD KEY `gerencia_gerente_produto_ibfk_1` (`id_produto`),
+  ADD KEY `gerencia_gerente_produto_ibfk_2` (`id_gerente`);
+
+--
+-- Índices de tabela `gerente`
+--
+ALTER TABLE `gerente`
+  ADD PRIMARY KEY (`id_gerente`);
+
+--
+-- Índices de tabela `manutenção`
+--
+ALTER TABLE `manutenção`
+  ADD PRIMARY KEY (`Chave`);
+
+--
+-- Índices de tabela `máquina`
+--
+ALTER TABLE `máquina`
+  ADD PRIMARY KEY (`id_maquina`);
+
+--
+-- Índices de tabela `produto`
+--
+ALTER TABLE `produto`
+  ADD PRIMARY KEY (`id_produto`),
+  ADD KEY `idCategoria` (`idCategoria`);
+
+--
+-- Índices de tabela `realiza`
+--
+ALTER TABLE `realiza`
+  ADD PRIMARY KEY (`id_maquina_manutenção`),
+  ADD KEY `Chave` (`Chave`),
+  ADD KEY `id_maquina` (`id_maquina`);
+
+--
+-- Índices de tabela `setor`
+--
+ALTER TABLE `setor`
+  ADD PRIMARY KEY (`id_setor`);
+
+--
+-- AUTO_INCREMENT para tabelas despejadas
+--
+
+--
+-- AUTO_INCREMENT de tabela `administrador`
+--
+ALTER TABLE `administrador`
+  MODIFY `id_administrador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de tabela `gerencia_administrador_funcionario`
+--
+ALTER TABLE `gerencia_administrador_funcionario`
+  MODIFY `id_administrador_funcionario` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `gerencia_administrador_maquina`
+--
+ALTER TABLE `gerencia_administrador_maquina`
+  MODIFY `id_administrador_maquina` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `gerencia_administrador_produto`
+--
+ALTER TABLE `gerencia_administrador_produto`
+  MODIFY `id_administrador_produto` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `gerencia_gerente_funcionario`
+--
+ALTER TABLE `gerencia_gerente_funcionario`
+  MODIFY `id_gerente_funcionario` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `gerencia_gerente_produto`
+--
+ALTER TABLE `gerencia_gerente_produto`
+  MODIFY `id_gerente_produto` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `realiza`
+--
+ALTER TABLE `realiza`
+  MODIFY `id_maquina_manutenção` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Restrições para tabelas despejadas
+--
+
+--
+-- Restrições para tabelas `funcionario`
+--
+ALTER TABLE `funcionario`
+  ADD CONSTRAINT `funcionario_ibfk_1` FOREIGN KEY (`idCargo`) REFERENCES `cargo` (`id_cargo`),
+  ADD CONSTRAINT `funcionario_ibfk_2` FOREIGN KEY (`idCargo`) REFERENCES `cargo` (`id_cargo`),
+  ADD CONSTRAINT `funcionario_ibfk_3` FOREIGN KEY (`idSetor`) REFERENCES `setor` (`id_setor`),
+  ADD CONSTRAINT `funcionario_ibfk_4` FOREIGN KEY (`idCargo`) REFERENCES `cargo` (`id_cargo`),
+  ADD CONSTRAINT `funcionario_ibfk_5` FOREIGN KEY (`idSetor`) REFERENCES `setor` (`id_setor`);
+
+--
+-- Restrições para tabelas `gerencia_administrador_funcionario`
+--
+ALTER TABLE `gerencia_administrador_funcionario`
+  ADD CONSTRAINT `gerencia_administrador_funcionario_ibfk_1` FOREIGN KEY (`id_funcionario`) REFERENCES `funcionario` (`id_funcionario`),
+  ADD CONSTRAINT `gerencia_administrador_funcionario_ibfk_2` FOREIGN KEY (`id_administrador`) REFERENCES `administrador` (`id_administrador`),
+  ADD CONSTRAINT `gerencia_administrador_funcionario_ibfk_3` FOREIGN KEY (`id_funcionario`) REFERENCES `funcionario` (`id_funcionario`),
+  ADD CONSTRAINT `gerencia_administrador_funcionario_ibfk_4` FOREIGN KEY (`id_administrador`) REFERENCES `administrador` (`id_administrador`);
+
+--
+-- Restrições para tabelas `gerencia_administrador_maquina`
+--
+ALTER TABLE `gerencia_administrador_maquina`
+  ADD CONSTRAINT `gerencia_administrador_maquina_ibfk_1` FOREIGN KEY (`id_administrador`) REFERENCES `administrador` (`id_administrador`),
+  ADD CONSTRAINT `gerencia_administrador_maquina_ibfk_2` FOREIGN KEY (`id_maquina`) REFERENCES `máquina` (`id_maquina`),
+  ADD CONSTRAINT `gerencia_administrador_maquina_ibfk_3` FOREIGN KEY (`id_administrador`) REFERENCES `administrador` (`id_administrador`),
+  ADD CONSTRAINT `gerencia_administrador_maquina_ibfk_4` FOREIGN KEY (`id_maquina`) REFERENCES `máquina` (`id_maquina`);
+
+--
+-- Restrições para tabelas `gerencia_administrador_produto`
+--
+ALTER TABLE `gerencia_administrador_produto`
+  ADD CONSTRAINT `gerencia_administrador_produto_ibfk_1` FOREIGN KEY (`id_administrador`) REFERENCES `administrador` (`id_administrador`),
+  ADD CONSTRAINT `gerencia_administrador_produto_ibfk_2` FOREIGN KEY (`id_produto`) REFERENCES `produto` (`id_produto`),
+  ADD CONSTRAINT `gerencia_administrador_produto_ibfk_3` FOREIGN KEY (`id_administrador`) REFERENCES `administrador` (`id_administrador`),
+  ADD CONSTRAINT `gerencia_administrador_produto_ibfk_4` FOREIGN KEY (`id_produto`) REFERENCES `produto` (`id_produto`);
+
+--
+-- Restrições para tabelas `gerencia_gerente_funcionario`
+--
+ALTER TABLE `gerencia_gerente_funcionario`
+  ADD CONSTRAINT `gerencia_gerente_funcionario_ibfk_1` FOREIGN KEY (`id_funcionario`) REFERENCES `funcionario` (`id_funcionario`),
+  ADD CONSTRAINT `gerencia_gerente_funcionario_ibfk_2` FOREIGN KEY (`id_gerente`) REFERENCES `gerente` (`id_gerente`);
+
+--
+-- Restrições para tabelas `gerencia_gerente_produto`
+--
+ALTER TABLE `gerencia_gerente_produto`
+  ADD CONSTRAINT `gerencia_gerente_produto_ibfk_1` FOREIGN KEY (`id_produto`) REFERENCES `produto` (`id_produto`),
+  ADD CONSTRAINT `gerencia_gerente_produto_ibfk_2` FOREIGN KEY (`id_gerente`) REFERENCES `gerente` (`id_gerente`);
+
+--
+-- Restrições para tabelas `produto`
+--
+ALTER TABLE `produto`
+  ADD CONSTRAINT `produto_ibfk_1` FOREIGN KEY (`idCategoria`) REFERENCES `categoria` (`id_categoria_brinquedo`),
+  ADD CONSTRAINT `produto_ibfk_2` FOREIGN KEY (`idCategoria`) REFERENCES `categoria` (`id_categoria_brinquedo`),
+  ADD CONSTRAINT `produto_ibfk_3` FOREIGN KEY (`idCategoria`) REFERENCES `categoria` (`id_categoria_brinquedo`);
+
+--
+-- Restrições para tabelas `realiza`
+--
+ALTER TABLE `realiza`
+  ADD CONSTRAINT `realiza_ibfk_1` FOREIGN KEY (`id_maquina`) REFERENCES `máquina` (`id_maquina`),
+  ADD CONSTRAINT `realiza_ibfk_2` FOREIGN KEY (`Chave`) REFERENCES `manutenção` (`Chave`),
+  ADD CONSTRAINT `realiza_ibfk_3` FOREIGN KEY (`id_maquina`) REFERENCES `máquina` (`id_maquina`),
+  ADD CONSTRAINT `realiza_ibfk_4` FOREIGN KEY (`Chave`) REFERENCES `manutenção` (`Chave`),
+  ADD CONSTRAINT `realiza_ibfk_5` FOREIGN KEY (`id_maquina`) REFERENCES `máquina` (`id_maquina`);
+COMMIT;
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2026-10-08  9:04:27
