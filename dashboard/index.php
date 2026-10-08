@@ -91,13 +91,13 @@ $menu = [ //array do menu //aqui
         <?php endforeach; ?>
         </nav>
         <main class ="content">
-            <div class="content head">
-                <h1>Histórico</h1>
+            <div class="content-head">
+                <h1>Funcionarios</h1>
                 <button class="btn-primary">
                     <span class = "icon-plus">
                         <img src="img/plus.svg" alt="+" class="plus">
                     </span>
-                    <h1>Novo Registro</h1>
+                    <span>Novo Registro</span>
                 </button>
             </div>
             

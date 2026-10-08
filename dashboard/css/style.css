@@ -112,7 +112,7 @@ button {cursor: pointer;}
     height: 75%;
     left: -27%;
     bottom: -86%;
-    border: 3px, solid #000;
+    border: 3px solid #000;
     border-bottom: 0;
     border-radius: 45% 45% 0 0;
 }
@@ -172,7 +172,7 @@ button {cursor: pointer;}
 }
 
 .content-head {
-    display: reverse;
+    display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 12px;
@@ -255,7 +255,7 @@ h1 {
 
 table {
     width: 100%;
-    border: collapse;
+    border-collapse: collapse;
 }
 
 th {

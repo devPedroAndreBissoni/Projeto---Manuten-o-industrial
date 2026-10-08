@@ -92,7 +92,7 @@ $menu = [ //array do menu //aqui
         </nav>
         <main class ="content">
             <div class="content head">
-                <h1>Histórico</h1>
+                <h1>Funcionarios</h1>
                 <button class="btn-primary">
                     <span class = "icon-plus">
                         <img src="img/plus.svg" alt="+" class="plus">
