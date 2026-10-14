@@ -18,29 +18,36 @@ $sql = "SELECT f.nome_funcionario AS nome,
         
 $funcionarios = $pdo->query($sql)->fetchAll();
 
+$paginaAtual = basename($_SERVER['SCRIPT_NAME']); // para marcar o item ativo do menu   
+
 $menu = [ //array do menu //aqui
     [
+        "nome" => 'Funcionários',
+        "arquivo" => 'index.php',
+        "icone" => "img/pessoas.svg"       
+    ],
+    [
         "nome" => "Histórico",
+        "arquivo" => 'historico.php',
         "icone" => "img/historico.svg"
     ], 
     [
         "nome" => 'Máq. e Equip.',
-        "arquivo" => 'telamaquinas.php',
+        "arquivo" => '../dashboard/maquinas.php',
         "icone" => "img/maquinas.svg"
     ],
     [
-        "nome" => 'Funcionários',
-        "icone" => "img/pessoas.svg"       
+        "nome" => 'Ordens de Serviço',
+        "arquivo" => 'ordens.php',
+        "icone" => "img/maleta.svg"
     ],
     [
-        "nome" => 'Ordens de Serviço',
-        "icone" => "img/maleta.svg"
-],
-    [
         "nome" => 'Produtos',
+        "arquivo" => 'produtos.php',
         "icone" => "img/caixa.svg"
     ],
 ];
+
 
 
 ?>
@@ -82,14 +89,17 @@ $menu = [ //array do menu //aqui
 
     <!--Corpo-->
     <div class="body">
-        <nav class = "sidebar"> <!--Parte lateral-->
-        <?php foreach ($menu as $item): ?> <!--Aqui puxei o array do menu lá de cima-->
-                <a href="#" class="side-item">
-                    <img src="<?= $item['icone'] ?>" alt="">
-                    <span><?= $item['nome'] ?></span>
-                </a>
-        <?php endforeach; ?>
-        </nav>
+    <nav class="sidebar">
+    <?php foreach ($menu as $item): ?> <!--Parte que faz o menu ser verificado como ativo-->
+        <?php $ativo = ($item['arquivo'] === $paginaAtual) ? 'active' : ''; ?>
+        <a href="<?= htmlspecialchars($item['arquivo']) ?>"
+           class="side-item <?= $ativo ?>"
+           <?= $ativo ? 'aria-current="page"' : '' ?>>
+            <img src="<?= htmlspecialchars($item['icone']) ?>" alt="">
+            <span><?= htmlspecialchars($item['nome']) ?></span>
+        </a>
+    <?php endforeach; ?>
+    </nav>
         <main class ="content">
             <div class="content-head">
                 <h1>Funcionarios</h1>
@@ -124,34 +134,38 @@ $menu = [ //array do menu //aqui
             </form>
 
         <!--Tabela-->
-        <table>
-            <thead>
-                <tr><th>Nome</th><th>Cargo/Permissão</th><th>Setor</th><th class="center">Ações</th></tr>
-            </thead>
-            <tbody>
-                <?php foreach ($funcionarios as $f): ?>
-                <tr>
-                    <td><?= htmlspecialchars($f['nome']) ?></td>
-                    <td><?= htmlspecialchars($f['cargo'] ?? '-') ?></td>
-                    <td><?= htmlspecialchars($f['setor'] ?? '-') ?></td>
-                    <td class="actions">
-                        <button aria-label="Editar">
-                            <img src="img/editar.svg" alt="editar" class="edit">
-                        </button> 
+            <div class="table-card">
+                <table>
+                    <thead>
+                        <tr><th>Nome</th><th>Cargo/Permissão</th><th>Setor</th><th class="center">Ações</th></tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($funcionarios as $f): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($f['nome']) ?></td>
+                            <td><?= htmlspecialchars($f['cargo'] ?? '-') ?></td>
+                            <td><?= htmlspecialchars($f['setor'] ?? '-') ?></td>
+                            <td class="actions">
+                                <button aria-label="Editar">
+                                    <img src="img/editar.svg" alt="editar" class="edit">
+                                </button> 
 
-                        <button aria-label="Documento">
-                            <img src="img/listar.svg" alt="detalhes" class="listar">
-                        </button> 
+                                <button aria-label="Documento">
+                                    <img src="img/listar.svg" alt="detalhes" class="listar">
+                                </button> 
 
-                        <button aria-label="Histórico">
-                            <img src="img/relogio.svg" alt="relogio" class="relogio">
-                        </button> 
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </main>
+                                <button aria-label="Histórico">
+                                    <img src="img/relogio.svg" alt="relogio" class="relogio">
+                                </button> 
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
 </div>
+<script src="js/menu.js"></script>
 </body>
 </html>
