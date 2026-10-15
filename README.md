@@ -34,7 +34,7 @@ O sistema conta com Controle de Acesso Baseado em Cargos (RBAC):
 | :--- | :--- |
 | **Funcionário** | Listar e atualizar máquinas e produtos. |
 | **Gerente** | Listar, atualizar e cadastrar funcionários e máquinas. |
-| **Administrador** | Permissão total (*CRUD*): Listar, atualizar, cadastrar e deletar funcionários, máquinas e produtos. |
+| **Administrador** | Permissão total (*CRUD*): Listar, atualizar, cadastrar e inativar funcionários, máquinas e produtos. |
 
 ---
 
@@ -76,7 +76,7 @@ A identidade visual da **Kidzy Brinquedos** combina cores vibrantes e acolhedora
 ##  Tecnologias
 
 - **Frontend:** HTML, CSS
-- **Backend:** PHP, JavaScript, Python
+- **Backend:** PHP, JavaScript
 - **Banco de Dados:** MySQL
 
 ---
