@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 15/10/2026 às 13:29
+-- Tempo de geração: 15/10/2026 às 14:13
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -44,7 +44,7 @@ CREATE TABLE `administrador` (
 
 INSERT INTO `administrador` (`id_administrador`, `cpf_administrador`, `nome_administrador`, `email_administrador`, `telefone_administrador`, `senha_administrador`, `ativo_administrador`, `id_cargo`) VALUES
 (1, '11111111111', 'Admin Teste', 'admin@kdz.com', '41999990001', '$2b$12$BLjoVZQgYBnnAoy1Cw8/Vu0BLM8WSQEMvosyfYKIG32KS8apHyKDK', 1, 0),
-(2, '11111111112', 'Admin Teste 2', 'admin2@kdz.com', '41999990002', '$2b$12$BLjoVZQgYBnnAoy1Cw8/Vu0BLM8WSQEMvosyfYKIG32KS8apHyKDK', 0, NULL);
+(2, '11111111112', 'Admin Teste 2', 'admin2@kdz.com', '41999990002', '$2b$12$BLjoVZQgYBnnAoy1Cw8/Vu0BLM8WSQEMvosyfYKIG32KS8apHyKDK', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -199,10 +199,10 @@ INSERT INTO `gerente` (`id_gerente`, `nome_gerente`, `email_gerente`, `cpf_geren
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `manutenção`
+-- Estrutura para tabela `manutencao`
 --
 
-CREATE TABLE `manutenção` (
+CREATE TABLE `manutencao` (
   `id_manutencao` int(11) NOT NULL,
   `tipo_manutencao` varchar(50) NOT NULL,
   `descricao_manutencao` varchar(300) DEFAULT NULL,
@@ -212,10 +212,10 @@ CREATE TABLE `manutenção` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `máquina`
+-- Estrutura para tabela `maquina`
 --
 
-CREATE TABLE `máquina` (
+CREATE TABLE `maquina` (
   `id_maquina` int(11) NOT NULL,
   `tipo_maquina` varchar(50) NOT NULL,
   `nome_maquina` varchar(100) NOT NULL,
@@ -346,15 +346,15 @@ ALTER TABLE `gerente`
   ADD PRIMARY KEY (`id_gerente`);
 
 --
--- Índices de tabela `manutenção`
+-- Índices de tabela `manutencao`
 --
-ALTER TABLE `manutenção`
+ALTER TABLE `manutencao`
   ADD PRIMARY KEY (`id_manutencao`);
 
 --
--- Índices de tabela `máquina`
+-- Índices de tabela `maquina`
 --
-ALTER TABLE `máquina`
+ALTER TABLE `maquina`
   ADD PRIMARY KEY (`id_maquina`);
 
 --
@@ -452,9 +452,9 @@ ALTER TABLE `gerencia_administrador_funcionario`
 --
 ALTER TABLE `gerencia_administrador_maquina`
   ADD CONSTRAINT `gerencia_administrador_maquina_ibfk_1` FOREIGN KEY (`id_administrador`) REFERENCES `administrador` (`id_administrador`),
-  ADD CONSTRAINT `gerencia_administrador_maquina_ibfk_2` FOREIGN KEY (`id_maquina`) REFERENCES `máquina` (`id_maquina`),
+  ADD CONSTRAINT `gerencia_administrador_maquina_ibfk_2` FOREIGN KEY (`id_maquina`) REFERENCES `maquina` (`id_maquina`),
   ADD CONSTRAINT `gerencia_administrador_maquina_ibfk_3` FOREIGN KEY (`id_administrador`) REFERENCES `administrador` (`id_administrador`),
-  ADD CONSTRAINT `gerencia_administrador_maquina_ibfk_4` FOREIGN KEY (`id_maquina`) REFERENCES `máquina` (`id_maquina`);
+  ADD CONSTRAINT `gerencia_administrador_maquina_ibfk_4` FOREIGN KEY (`id_maquina`) REFERENCES `maquina` (`id_maquina`);
 
 --
 -- Restrições para tabelas `gerencia_administrador_produto`
@@ -491,11 +491,11 @@ ALTER TABLE `produto`
 -- Restrições para tabelas `realiza`
 --
 ALTER TABLE `realiza`
-  ADD CONSTRAINT `realiza_ibfk_1` FOREIGN KEY (`id_maquina`) REFERENCES `máquina` (`id_maquina`),
-  ADD CONSTRAINT `realiza_ibfk_2` FOREIGN KEY (`id_manutencao`) REFERENCES `manutenção` (`id_manutencao`),
-  ADD CONSTRAINT `realiza_ibfk_3` FOREIGN KEY (`id_maquina`) REFERENCES `máquina` (`id_maquina`),
-  ADD CONSTRAINT `realiza_ibfk_4` FOREIGN KEY (`id_manutencao`) REFERENCES `manutenção` (`id_manutencao`),
-  ADD CONSTRAINT `realiza_ibfk_5` FOREIGN KEY (`id_maquina`) REFERENCES `máquina` (`id_maquina`);
+  ADD CONSTRAINT `realiza_ibfk_1` FOREIGN KEY (`id_maquina`) REFERENCES `maquina` (`id_maquina`),
+  ADD CONSTRAINT `realiza_ibfk_2` FOREIGN KEY (`id_manutencao`) REFERENCES `manutencao` (`id_manutencao`),
+  ADD CONSTRAINT `realiza_ibfk_3` FOREIGN KEY (`id_maquina`) REFERENCES `maquina` (`id_maquina`),
+  ADD CONSTRAINT `realiza_ibfk_4` FOREIGN KEY (`id_manutencao`) REFERENCES `manutencao` (`id_manutencao`),
+  ADD CONSTRAINT `realiza_ibfk_5` FOREIGN KEY (`id_maquina`) REFERENCES `maquina` (`id_maquina`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
