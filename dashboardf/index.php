@@ -6,8 +6,8 @@ $sql = "SELECT f.nome_funcionario AS nome,
                c.nome_cargo       AS cargo,
                s.nome_setor       AS setor
         FROM funcionario f
-        LEFT JOIN cargo c ON c.id_cargo = f.idCargo
-        LEFT JOIN setor s ON s.id_setor = f.idSetor
+        LEFT JOIN cargo c ON c.id_cargo = f.id_cargo
+        LEFT JOIN setor s ON s.id_setor = f.id_setor
 
         UNION ALL
 

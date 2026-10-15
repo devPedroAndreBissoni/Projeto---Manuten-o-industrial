@@ -30,11 +30,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // 1) Procura em funcionario (funcionário e gerente)
     $sql = "SELECT f.id_funcionario AS id, f.nome_funcionario AS nome,
-                   f.email_funcionario AS email, f.senha_funcionario AS senha_hash,
-                   c.nome_cargo AS cargo
-            FROM funcionario f
-            LEFT JOIN cargo c ON c.id_cargo = f.idCargo
-            WHERE f.email_funcionario = ?";
+    f.email_funcionario AS email, f.senha_funcionario AS senha_hash,
+    c.nome_cargo AS cargo
+    FROM funcionario f
+    LEFT JOIN cargo c ON c.id_cargo = f.id_cargo
+    WHERE f.email_funcionario = ?";
 
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, "s", $email);
