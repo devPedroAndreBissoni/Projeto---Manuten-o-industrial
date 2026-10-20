@@ -1,18 +1,10 @@
 <?php
 require_once 'conexao.php';
 //LEMBRAR MUDAR OS ATRIBUTOS URGENTE PARA FUNCIONARRRR!!
-$sql = "SELECT f.nome_funcionario AS nome,                  c.nome_cargo       AS cargo,
-               s.nome_setor       AS setor
-        FROM funcionario f
-        LEFT JOIN cargo c ON c.id_cargo = f.id_cargo
-        LEFT JOIN setor s ON s.id_setor = f.id_setor
-
-        UNION ALL
-
-        SELECT a.nome_administrador, 'Administrador', NULL
-        FROM administrador a
-
-        ORDER BY nome";
+$sql = "SELECT m.nome_maquina                   AS nome,                  
+               m.tipo_maquina                   AS maquina,
+               m.funcionamento_maquina          AS funcionamento
+        FROM maquina m";
 
 $maquina = $pdo -> query($sql) -> fetchAll();
 $tituloPagina = 'Histórico'; ?>
@@ -73,9 +65,9 @@ $tituloPagina = 'Histórico'; ?>
                     <input type="text" placeholder="Buscar por Nome...">
                 </label>
 
-                <label class="field"> Setor:
+                <label class="field"> Modelo:
                      <select>
-                        <option value="1"> Produção</option>
+                        <option value="1"> [Montagem]</option>
                     </select>
                 </label>
 
@@ -91,14 +83,14 @@ $tituloPagina = 'Histórico'; ?>
         <div class="table-card">
                 <table>
                     <thead>
-                        <tr><th>Codigo</th><th>Equipamento/Modelo</th><th>Setor</th><th>Status</th><th class="center">Ações</th></tr>
+                        <tr><th>Codigo</th><th>Equipamento/Modelo</th><th>Status</th><th class="center">Ações</th></tr>
                     </thead>
                     <tbody>
                         <?php foreach ($maquina as $m): ?>
                         <tr>
-                            <td><?= htmlspecialchars($m['nome_maquina']) ?></td>
-                            <td><?= htmlspecialchars($m['tipo_maquina'] ?? '-') ?></td>
-                            <td><?= htmlspecialchars($m['funcionamento_maquina'] ?? '-') ?></td>
+                            <td><?= htmlspecialchars($m['nome']) ?></td>
+                            <td><?= htmlspecialchars($m['maquina'] ?? '-') ?></td>
+                            <td><?= htmlspecialchars($m['funcionamento'] ?? '-') ?></td>
                             <td class="actions">
                                 <button aria-label="Editar">
                                     <img src="img/editar.svg" alt="editar" class="edit">
