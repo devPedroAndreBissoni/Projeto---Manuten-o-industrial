@@ -1,7 +1,6 @@
 <?php
 require_once 'conexao.php';
 
-
 $tituloPagina = 'Histórico'; ?>
 <!DOCTYPE html>
 <html lang="en">

@@ -2,21 +2,25 @@
 
 require_once 'conexao.php';
 
-$sql = "SELECT f.nome_funcionario AS nome,
+$sql = "SELECT f.nome_funcionario AS nome, /*Deixei com apelidos diferentes por serem tabelas diferentes c, s, f*/
                c.nome_cargo       AS cargo,
                s.nome_setor       AS setor
         FROM funcionario f
-        LEFT JOIN cargo c ON c.id_cargo = f.id_cargo
-        LEFT JOIN setor s ON s.id_setor = f.id_setor
+        INNER JOIN cargo c ON c.id_cargo = f.id_cargo /*INNER JOIN só pode ser usado para tabelas diferentes*/
+        INNER JOIN setor s ON s.id_setor = f.id_setor
 
-        UNION ALL
+        UNION ALL /*UNION ALL -> junta todas as tabelas em uma, puxando as informações das outras duas para a principal*/
 
-        SELECT a.nome_administrador, 'Administrador', NULL
+        SELECT a.nome_administrador, 'Administrador', 'Geral'
         FROM administrador a
 
         ORDER BY nome";
         
 $funcionarios = $pdo->query($sql)->fetchAll();
+
+$setores = $pdo->query("SELECT id_setor, nome_setor FROM setor")->fetchAll();
+
+$cargo = $pdo->query("SELECT id_cargo, tipo_cargo FROM cargo")->fetchAll();
 
 $paginaAtual = basename($_SERVER['SCRIPT_NAME']); // para marcar o item ativo do menu   
 
@@ -112,24 +116,28 @@ $menu = [ //array do menu //aqui
             </div>
             
         <!--Filtros-->
-            <form class="filters">
+            <form class="filters" method="get">
                 <label class="search">
                     <img src="img/lupa.svg" alt="lupa" class="lupa">
                         <input type="text" placeholder="Buscar por Nome...">
                 </label>
 
                 <label class="field"> Setor:
-                    <select>
-                        <option value="1"> [Produção]</option>
-                    </select>
+                <select name="setor"> <!--aqui eu puxei o setor que eu chamei lá em cima para vincular ao banco para ter opções que realmente existam no banco de dados-->
+                <option value="">Todos</option>
+                <?php foreach ($setores as $s): ?>
+                <option value="<?= $s['id_setor'] ?>"><?= htmlspecialchars($s['nome_setor']) ?></option>
+                <?php endforeach; ?>
+                </select>
                 </label>
 
                 <label class = "field"> Cargo:
-                    <select name ="cargo" id="cargo">
-                        <option value="1">[Funcionário]</option>
-                        <option value="2">[Gerente]</option>
-                        <option value="3">[Administrador]</option>
-                    </select>
+                <select name="cargo"> <!--Segui a mesma lógica do setor-->
+                <option value="">Todos</option>
+                <?php foreach ($cargo as $c): ?>
+                <option value="<?= $c['id_cargo'] ?>"><?= htmlspecialchars($c['tipo_cargo']) ?></option>
+                <?php endforeach; ?>
+                </select>
                 </label>
             </form>
 
