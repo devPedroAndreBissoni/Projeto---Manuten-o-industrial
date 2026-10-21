@@ -1,13 +1,12 @@
 <?php
 require_once 'conexao.php';
-//LEMBRAR MUDAR OS ATRIBUTOS URGENTE PARA FUNCIONARRRR!!
 $sql = "SELECT m.nome_maquina                   AS nome,                  
                m.tipo_maquina                   AS maquina,
                m.funcionamento_maquina          AS funcionamento
         FROM maquina m";
 
 $maquina = $pdo -> query($sql) -> fetchAll();
-$tituloPagina = 'Histórico'; ?>
+$tituloPagina = 'Maquinas'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
