@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.38, for Win64 (x86_64)
 --
--- Host: localhost    Database: db_kdz
+-- Host: localhost    Database: db_sql
 -- ------------------------------------------------------
 -- Server version	8.0.39
 
@@ -24,13 +24,13 @@ DROP TABLE IF EXISTS `administrador`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `administrador` (
   `id_administrador` int NOT NULL AUTO_INCREMENT,
-  `cpf_administrador` varchar(14) COLLATE utf8mb4_general_ci NOT NULL,
-  `nome_administrador` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `email_administrador` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `telefone_administrador` varchar(12) COLLATE utf8mb4_general_ci NOT NULL,
-  `senha_administrador` varchar(225) COLLATE utf8mb4_general_ci NOT NULL,
+  `id_cargo` int NOT NULL,
   `ativo_administrador` tinyint(1) NOT NULL DEFAULT '1',
-  `id_cargo` int DEFAULT NULL,
+  `cpf_administrador` varchar(14) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `nome_administrador` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `email_administrador` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `telefone_administrador` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `senha_administrador` varchar(225) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id_administrador`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -41,7 +41,7 @@ CREATE TABLE `administrador` (
 
 LOCK TABLES `administrador` WRITE;
 /*!40000 ALTER TABLE `administrador` DISABLE KEYS */;
-INSERT INTO `administrador` VALUES (1,'11111111111','Admin Teste','admin@kdz.com','41999990001','$2b$12$BLjoVZQgYBnnAoy1Cw8/Vu0BLM8WSQEMvosyfYKIG32KS8apHyKDK',1,0),(2,'11111111112','Admin Teste 2','admin2@kdz.com','41999990002','$2b$12$BLjoVZQgYBnnAoy1Cw8/Vu0BLM8WSQEMvosyfYKIG32KS8apHyKDK',0,1);
+INSERT INTO `administrador` VALUES (1,0,1,'11111111111','Admin Teste','admin@kdz.com','41999990001','$2b$12$BLjoVZQgYBnnAoy1Cw8/Vu0BLM8WSQEMvosyfYKIG32KS8apHyKDK'),(2,1,0,'11111111112','Admin Teste 2','admin2@kdz.com','41999990002','$2b$12$BLjoVZQgYBnnAoy1Cw8/Vu0BLM8WSQEMvosyfYKIG32KS8apHyKDK');
 /*!40000 ALTER TABLE `administrador` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -54,8 +54,8 @@ DROP TABLE IF EXISTS `cargo`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `cargo` (
   `id_cargo` int NOT NULL,
-  `tipo_cargo` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `nome_cargo` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `tipo_cargo` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `nome_cargo` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `ativo_cargo` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_cargo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -79,10 +79,10 @@ DROP TABLE IF EXISTS `categoria`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `categoria` (
-  `id_categoria_brinquedo` int NOT NULL,
-  `tipo_categoria` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `id_categoria` int NOT NULL,
+  `tipo_categoria` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `ativo_categoria` tinyint(1) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`id_categoria_brinquedo`)
+  PRIMARY KEY (`id_categoria`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -190,11 +190,11 @@ CREATE TABLE `funcionario` (
   `id_funcionario` int NOT NULL,
   `id_cargo` int NOT NULL,
   `id_setor` int NOT NULL,
-  `telefone_funcionario` varchar(12) COLLATE utf8mb4_general_ci NOT NULL,
-  `cpf_funcionario` varchar(14) COLLATE utf8mb4_general_ci NOT NULL,
-  `email_funcionario` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `nome_funcionario` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `senha_funcionario` varchar(225) COLLATE utf8mb4_general_ci NOT NULL,
+  `telefone_funcionario` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `cpf_funcionario` varchar(14) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `email_funcionario` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `nome_funcionario` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `senha_funcionario` varchar(225) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `ativo_funcionario` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_funcionario`),
   KEY `idCargo` (`id_cargo`),
@@ -377,11 +377,11 @@ DROP TABLE IF EXISTS `gerente`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `gerente` (
   `id_gerente` int NOT NULL,
-  `nome_gerente` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `email_gerente` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `cpf_gerente` varchar(12) COLLATE utf8mb4_general_ci NOT NULL,
-  `telefone_gerente` varchar(14) COLLATE utf8mb4_general_ci NOT NULL,
-  `senha_gerente` varchar(225) COLLATE utf8mb4_general_ci NOT NULL,
+  `nome_gerente` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `email_gerente` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `cpf_gerente` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `telefone_gerente` varchar(14) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `senha_gerente` varchar(225) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `ativo_gerente` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_gerente`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -406,8 +406,8 @@ DROP TABLE IF EXISTS `manutencao`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `manutencao` (
   `id_manutencao` int NOT NULL,
-  `tipo_manutencao` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `descricao_manutencao` varchar(300) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `tipo_manutencao` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `descricao_manutencao` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `ativo_manutencao` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_manutencao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -431,9 +431,9 @@ DROP TABLE IF EXISTS `maquina`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `maquina` (
   `id_maquina` int NOT NULL,
-  `tipo_maquina` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `nome_maquina` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `funcionamento_maquina` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `tipo_maquina` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `nome_maquina` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `funcionamento_maquina` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `ativo_maquina` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_maquina`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -459,8 +459,8 @@ CREATE TABLE `ordem_de_serviço` (
   `id_ords` int NOT NULL AUTO_INCREMENT,
   `id_manutenção` int DEFAULT NULL,
   `datetime_ords` datetime NOT NULL,
-  `urgencia_ords` varchar(225) NOT NULL,
-  `nomeresponsavel_ords` varchar(225) NOT NULL,
+  `urgencia_ords` varchar(225) COLLATE utf8mb4_general_ci NOT NULL,
+  `nomeresponsavel_ords` varchar(225) COLLATE utf8mb4_general_ci NOT NULL,
   `ativo_ords` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_ords`),
   KEY `id_manutenção` (`id_manutenção`),
@@ -487,15 +487,15 @@ DROP TABLE IF EXISTS `produto`;
 CREATE TABLE `produto` (
   `id_produto` int NOT NULL,
   `id_categoria` int NOT NULL,
-  `nome_produto` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `nome_produto` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `estoque_produto` bigint NOT NULL,
   `data_producao` date NOT NULL,
   `ativo_produto` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_produto`),
   KEY `idCategoria` (`id_categoria`),
-  CONSTRAINT `produto_ibfk_1` FOREIGN KEY (`id_categoria`) REFERENCES `categoria` (`id_categoria_brinquedo`),
-  CONSTRAINT `produto_ibfk_2` FOREIGN KEY (`id_categoria`) REFERENCES `categoria` (`id_categoria_brinquedo`),
-  CONSTRAINT `produto_ibfk_3` FOREIGN KEY (`id_categoria`) REFERENCES `categoria` (`id_categoria_brinquedo`)
+  CONSTRAINT `produto_ibfk_1` FOREIGN KEY (`id_categoria`) REFERENCES `categoria` (`id_categoria`),
+  CONSTRAINT `produto_ibfk_2` FOREIGN KEY (`id_categoria`) REFERENCES `categoria` (`id_categoria`),
+  CONSTRAINT `produto_ibfk_3` FOREIGN KEY (`id_categoria`) REFERENCES `categoria` (`id_categoria`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -545,7 +545,7 @@ DROP TABLE IF EXISTS `setor`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `setor` (
   `id_setor` int NOT NULL,
-  `nome_setor` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `nome_setor` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `ativo_setor` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_setor`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -570,4 +570,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-10-22 11:12:19
+-- Dump completed on 2026-11-04  9:04:20
