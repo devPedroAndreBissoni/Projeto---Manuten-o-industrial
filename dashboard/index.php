@@ -2,17 +2,40 @@
 
 require_once 'conexao.php';
 
-$sql = "SELECT f.nome_funcionario AS nome, /*Deixei com apelidos diferentes por serem tabelas diferentes c, s, f*/
-               c.nome_cargo       AS cargo,
-               s.nome_setor       AS setor
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Token de segurança (CSRF) usado pelo formulário de edição
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+$csrf = $_SESSION['csrf_token'];
+
+/* Agora a consulta também traz o id, o tipo (funcionario/administrador) e os dados
+   necessários para preencher o modal de edição. Como são tabelas diferentes, o "tipo"
+   diz ao editar.php em qual tabela fazer o UPDATE. */
+$sql = "SELECT f.id_funcionario       AS id,
+               'funcionario'          AS tipo,
+               f.nome_funcionario     AS nome, /*Deixei com apelidos diferentes por serem tabelas diferentes c, s, f*/
+               f.email_funcionario    AS email,
+               f.telefone_funcionario AS telefone,
+               f.id_cargo             AS id_cargo,
+               f.id_setor             AS id_setor,
+               c.nome_cargo           AS cargo,
+               s.nome_setor           AS setor
         FROM funcionario f
         INNER JOIN cargo c ON c.id_cargo = f.id_cargo /*INNER JOIN só pode ser usado para tabelas diferentes*/
         INNER JOIN setor s ON s.id_setor = f.id_setor
+        WHERE f.ativo_funcionario = 1 /*Inativos continuam no banco, só não aparecem aqui*/
 
         UNION ALL /*UNION ALL -> junta todas as tabelas em uma, puxando as informações das outras duas para a principal*/
 
-        SELECT a.nome_administrador, 'Administrador', 'Geral'
+        SELECT a.id_administrador, 'administrador', a.nome_administrador,
+               a.email_administrador, a.telefone_administrador,
+               NULL, NULL, 'Administrador', 'Geral'
         FROM administrador a
+        WHERE a.ativo_administrador = 1
 
         ORDER BY nome";
         
@@ -20,7 +43,7 @@ $funcionarios = $pdo->query($sql)->fetchAll();
 
 $setores = $pdo->query("SELECT id_setor, nome_setor FROM setor")->fetchAll();
 
-$cargo = $pdo->query("SELECT id_cargo, tipo_cargo FROM cargo")->fetchAll();
+$cargo = $pdo->query("SELECT id_cargo, nome_cargo, tipo_cargo FROM cargo")->fetchAll();
 
 $paginaAtual = basename($_SERVER['SCRIPT_NAME']); // para marcar o item ativo do menu   
 
@@ -107,7 +130,7 @@ $menu = [ //array do menu //aqui
         <main class ="content">
             <div class="content-head">
                 <h1>Funcionários</h1>
-                <button class="btn-primary">
+                <button type="button" class="btn-primary" id="btn-novo"> <!--Abre o modal de cadastro (criar.php)-->
                     <span class = "icon-plus">
                         <img src="img/plus.svg" alt="+" class="plus">
                     </span>
@@ -150,21 +173,36 @@ $menu = [ //array do menu //aqui
                     <tbody>
                         <?php foreach ($funcionarios as $f): ?>
                         <tr>
-                            <td><?= htmlspecialchars($f['nome']) ?></td>
-                            <td><?= htmlspecialchars($f['cargo'] ?? '-') ?></td>
-                            <td><?= htmlspecialchars($f['setor'] ?? '-') ?></td>
+                            <td class="col-nome"><?= htmlspecialchars($f['nome']) ?></td>
+                            <td class="col-cargo"><?= htmlspecialchars($f['cargo'] ?? '-') ?></td>
+                            <td class="col-setor"><?= htmlspecialchars($f['setor'] ?? '-') ?></td>
                             <td class="actions">
-                                <button aria-label="Editar">
+                                <!--Os data-* levam os dados da linha para o modal de edição-->
+                                <button type="button" class="btn-editar" aria-label="Editar"
+                                    data-id="<?= (int) $f['id'] ?>"
+                                    data-tipo="<?= htmlspecialchars($f['tipo']) ?>"
+                                    data-nome="<?= htmlspecialchars($f['nome']) ?>"
+                                    data-email="<?= htmlspecialchars($f['email'] ?? '') ?>"
+                                    data-telefone="<?= htmlspecialchars($f['telefone'] ?? '') ?>"
+                                    data-cargo="<?= htmlspecialchars((string) ($f['id_cargo'] ?? '')) ?>"
+                                    data-setor="<?= htmlspecialchars((string) ($f['id_setor'] ?? '')) ?>">
                                     <img src="img/editar.svg" alt="editar" class="edit">
                                 </button> 
 
-                                <button aria-label="Documento">
+                                <!--Abre o modal com todas as informações da pessoa (dados buscados em detalhes.php)-->
+                                <button type="button" class="btn-detalhes" aria-label="Detalhes"
+                                    data-id="<?= (int) $f['id'] ?>"
+                                    data-tipo="<?= htmlspecialchars($f['tipo']) ?>">
                                     <img src="img/listar.svg" alt="detalhes" class="listar">
-                                </button> 
+                                </button>
 
-                                <button aria-label="Histórico">
-                                    <img src="img/relogio.svg" alt="relogio" class="relogio">
-                                </button> 
+                                <!--Inativar = exclusão lógica (ativo = 0). Os dados continuam no banco-->
+                                <button type="button" class="btn-inativar" aria-label="Inativar"
+                                    data-id="<?= (int) $f['id'] ?>"
+                                    data-tipo="<?= htmlspecialchars($f['tipo']) ?>"
+                                    data-nome="<?= htmlspecialchars($f['nome']) ?>">
+                                    <img src="img/lixo.svg" alt="desativar" class="inativar">
+                                </button>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -174,6 +212,210 @@ $menu = [ //array do menu //aqui
         </main>
     </div>
 </div>
+
+<!--Modal de edição-->
+<div class="modal" id="modal-editar" role="dialog" aria-modal="true" aria-labelledby="editar-titulo" hidden>
+    <div class="modal-card">
+        <div class="modal-head">
+            <h2 id="editar-titulo">Editar Registro</h2>
+            <button type="button" class="modal-close" data-fechar aria-label="Fechar">&times;</button>
+        </div>
+
+        <form id="form-editar" autocomplete="off">
+            <div class="modal-body">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf) ?>">
+                <input type="hidden" name="tipo">
+                <input type="hidden" name="id">
+
+                <p class="modal-erro" id="editar-erro" role="alert" hidden></p>
+
+                <label class="field"> Nome:
+                    <input type="text" name="nome" required minlength="3" maxlength="100">
+                </label>
+
+                <label class="field"> E-mail:
+                    <input type="email" name="email" required maxlength="100">
+                </label>
+
+                <label class="field"> Telefone:
+                    <input type="text" name="telefone" required inputmode="tel" maxlength="15" placeholder="(41) 99999-0000">
+                </label>
+
+                <!--Só aparecem para funcionários (administrador tem cargo/setor fixos)-->
+                <label class="field campo-funcionario"> Setor:
+                    <select name="id_setor" required>
+                        <?php foreach ($setores as $s): ?>
+                        <option value="<?= $s['id_setor'] ?>"><?= htmlspecialchars($s['nome_setor']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+
+                <label class="field campo-funcionario"> Cargo:
+                    <select name="id_cargo" required>
+                        <?php foreach ($cargo as $c): ?>
+                        <option value="<?= $c['id_cargo'] ?>"><?= htmlspecialchars($c['nome_cargo']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+            </div>
+
+            <div class="modal-foot">
+                <button type="button" class="btn-secondary" data-fechar>Cancelar</button>
+                <button type="submit" class="btn-primary" id="editar-salvar">Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!--Modal de detalhes-->
+<div class="modal" id="modal-detalhes" role="dialog" aria-modal="true" aria-labelledby="detalhes-titulo" hidden>
+    <div class="modal-card largo">
+        <div class="modal-head">
+            <h2 id="detalhes-titulo">Detalhes</h2>
+            <button type="button" class="modal-close" data-fechar aria-label="Fechar">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <input type="hidden" id="detalhes-csrf" value="<?= htmlspecialchars($csrf) ?>">
+
+            <p class="detalhes-carregando" id="detalhes-carregando">Carregando...</p>
+            <p class="modal-erro" id="detalhes-erro" role="alert" hidden></p>
+
+            <div id="detalhes-conteudo" class="detalhes-conteudo" hidden>
+                <div class="detalhes-topo">
+                    <h3 class="detalhes-nome" id="detalhes-nome"></h3>
+                    <span id="detalhes-status" class="badge"></span>
+                </div>
+
+                <dl class="detalhes-grid" id="detalhes-grid"></dl>
+
+                <section class="detalhes-secao" id="detalhes-resp-secao">
+                    <h3>Responsáveis</h3>
+                    <ul class="detalhes-lista" id="detalhes-resp"></ul>
+                </section>
+
+                <section class="detalhes-secao">
+                    <h3>Ordens de serviço</h3>
+                    <ul class="detalhes-lista" id="detalhes-os"></ul>
+                </section>
+            </div>
+        </div>
+
+        <div class="modal-foot">
+            <button type="button" class="btn-secondary" data-fechar>Fechar</button>
+        </div>
+    </div>
+</div>
+
+<!--Modal de confirmação para inativar-->
+<div class="modal" id="modal-inativar" role="dialog" aria-modal="true" aria-labelledby="inativar-titulo" hidden>
+    <div class="modal-card pequeno">
+        <div class="modal-head">
+            <h2 id="inativar-titulo">Inativar Registro</h2>
+            <button type="button" class="modal-close" data-fechar aria-label="Fechar">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <input type="hidden" id="inativar-csrf" value="<?= htmlspecialchars($csrf) ?>">
+
+            <p class="modal-erro" id="inativar-erro" role="alert" hidden></p>
+
+            <p class="confirmar-texto">
+                Deseja inativar <strong id="inativar-nome"></strong>?
+            </p>
+            <p class="confirmar-aviso">
+                A pessoa deixará de aparecer na lista, mas todos os dados dela continuam guardados no banco.
+            </p>
+        </div>
+
+        <div class="modal-foot">
+            <button type="button" class="btn-secondary" data-fechar>Cancelar</button>
+            <button type="button" class="btn-primary" id="inativar-confirmar">Inativar</button>
+        </div>
+    </div>
+</div>
+
+<!--Modal de novo registro (cadastro de funcionário)-->
+<div class="modal" id="modal-novo" role="dialog" aria-modal="true" aria-labelledby="novo-titulo" hidden>
+    <div class="modal-card medio">
+        <div class="modal-head">
+            <h2 id="novo-titulo">Novo Registro</h2>
+            <button type="button" class="modal-close" data-fechar aria-label="Fechar">&times;</button>
+        </div>
+
+        <form id="form-novo" autocomplete="off">
+            <div class="modal-body">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf) ?>">
+
+                <p class="modal-erro" id="novo-erro" role="alert" hidden></p>
+
+                <label class="field"> Nome:
+                    <input type="text" name="nome" required minlength="3" maxlength="100">
+                </label>
+
+                <div class="linha-2">
+                    <label class="field"> CPF:
+                        <input type="text" name="cpf" required inputmode="numeric" maxlength="14" placeholder="000.000.000-00">
+                    </label>
+
+                    <label class="field"> Telefone:
+                        <input type="text" name="telefone" required inputmode="tel" maxlength="15" placeholder="(41) 99999-0000">
+                    </label>
+                </div>
+
+                <label class="field"> E-mail:
+                    <input type="email" name="email" required maxlength="100">
+                </label>
+
+                <div class="linha-2">
+                    <label class="field"> Setor:
+                        <select name="id_setor" required>
+                            <option value="" selected disabled>Selecione...</option>
+                            <?php foreach ($setores as $s): ?>
+                            <option value="<?= $s['id_setor'] ?>"><?= htmlspecialchars($s['nome_setor']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </label>
+
+                    <label class="field"> Cargo:
+                        <select name="id_cargo" required>
+                            <option value="" selected disabled>Selecione...</option>
+                            <?php foreach ($cargo as $c): ?>
+                            <option value="<?= $c['id_cargo'] ?>"><?= htmlspecialchars($c['nome_cargo']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </label>
+                </div>
+
+                <!--Senha usada no login. Vai para o banco só como hash (bcrypt)-->
+                <div class="linha-2">
+                    <label class="field"> Senha:
+                        <input type="password" name="senha" required minlength="8" maxlength="72" autocomplete="new-password">
+                    </label>
+
+                    <label class="field"> Confirmar senha:
+                        <input type="password" name="confirmar_senha" required minlength="8" maxlength="72" autocomplete="new-password">
+                    </label>
+                </div>
+
+                <label class="check">
+                    <input type="checkbox" id="novo-mostrar-senha"> Mostrar senha
+                </label>
+                <p class="campo-dica">A senha deve ter de 8 a 72 caracteres.</p>
+            </div>
+
+            <div class="modal-foot">
+                <button type="button" class="btn-secondary" data-fechar>Cancelar</button>
+                <button type="submit" class="btn-primary" id="novo-salvar">Cadastrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script src="js/menu.js"></script>
+<script src="js/editar.js"></script>
+<script src="js/detalhes.js"></script>
+<script src="js/inativar.js"></script>
+<script src="js/novo.js"></script>
 </body>
 </html>
