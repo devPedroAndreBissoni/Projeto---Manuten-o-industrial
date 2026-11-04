@@ -12,6 +12,31 @@ if (empty($_SESSION['csrf_token'])) {
 }
 $csrf = $_SESSION['csrf_token'];
 
+/* ===== TEMPORÁRIO: simula o usuário logado até existir a tela de login =====
+   O login de verdade deve gravar estas duas chaves e este bloco deve ser APAGADO.
+   tipo: 'administrador', 'gerente' ou 'funcionario' | id: id na tabela correspondente */
+if (empty($_SESSION['usuario_id'])) {
+    $_SESSION['usuario_id']   = 1;
+    $_SESSION['usuario_tipo'] = 'administrador';
+}
+/* ===== fim do bloco temporário ===== */
+
+/* Nome de quem está logado (mostrado no topo). Reaproveita o $pdo que já vem do conexao.php.
+   Os nomes de tabela/coluna vêm desta lista fixa, nunca de dados digitados. */
+$tabelasUsuario = [
+    'funcionario'   => ['funcionario',   'nome_funcionario',   'id_funcionario'],
+    'administrador' => ['administrador', 'nome_administrador', 'id_administrador'],
+    'gerente'       => ['gerente',       'nome_gerente',       'id_gerente'],
+];
+$nomeUsuario = 'Usuário';
+$tipoUsuario = $_SESSION['usuario_tipo'] ?? '';
+if (isset($tabelasUsuario[$tipoUsuario])) {
+    [$tabU, $colNome, $colId] = $tabelasUsuario[$tipoUsuario];
+    $stU = $pdo->prepare("SELECT $colNome FROM $tabU WHERE $colId = :id AND ativo_$tabU = 1");
+    $stU->execute([':id' => (int) ($_SESSION['usuario_id'] ?? 0)]);
+    $nomeUsuario = $stU->fetchColumn() ?: $nomeUsuario;
+}
+
 /* Agora a consulta também traz o id, o tipo (funcionario/administrador) e os dados
    necessários para preencher o modal de edição. Como são tabelas diferentes, o "tipo"
    diz ao editar.php em qual tabela fazer o UPDATE. */
@@ -23,7 +48,8 @@ $sql = "SELECT f.id_funcionario       AS id,
                f.id_cargo             AS id_cargo,
                f.id_setor             AS id_setor,
                c.nome_cargo           AS cargo,
-               s.nome_setor           AS setor
+               s.nome_setor           AS setor,
+               c.tipo_cargo           AS tipo_cargo /*usado pelo filtro de cargo*/
         FROM funcionario f
         INNER JOIN cargo c ON c.id_cargo = f.id_cargo /*INNER JOIN só pode ser usado para tabelas diferentes*/
         INNER JOIN setor s ON s.id_setor = f.id_setor
@@ -33,7 +59,7 @@ $sql = "SELECT f.id_funcionario       AS id,
 
         SELECT a.id_administrador, 'administrador', a.nome_administrador,
                a.email_administrador, a.telefone_administrador,
-               NULL, NULL, 'Administrador', 'Geral'
+               NULL, NULL, 'Administrador', 'Geral', 'administrador'
         FROM administrador a
         WHERE a.ativo_administrador = 1
 
@@ -98,7 +124,7 @@ $menu = [ //array do menu //aqui
             <div class="topbar-right">
                 <div class="user"> <!--aqui só botei texto substituir pelo usuário do banco!!!!-->
                     <span class="avatar"></span>
-                    <span><strong>teste</strong>oi</span>
+                    <span><strong><?= htmlspecialchars($nomeUsuario) ?></strong></span>
                 </div>
                 <button class="btn-login" type="button" data-action="login"> <!--Ícone do login/Usuário-->
                     <span class="icon-circle" aria-hidden="true">
@@ -108,7 +134,7 @@ $menu = [ //array do menu //aqui
                 <button class="icon-btn" aria-label="Notificações">
                     <img src="img/sino.svg" alt="sininho">
                 </button>
-                <button class="icon-btn" aria-label="Configurações">
+                <button type="button" class="icon-btn" id="btn-conta" aria-label="Configurações da conta">
                     <img src="img/engrenagem.svg" alt="Config">
                 </button>
             </div>
@@ -142,11 +168,11 @@ $menu = [ //array do menu //aqui
             <form class="filters" method="get">
                 <label class="search">
                     <img src="img/lupa.svg" alt="lupa" class="lupa">
-                        <input type="text" placeholder="Buscar por Nome...">
+                        <input type="text" id="filtro-nome" placeholder="Buscar por Nome..." autocomplete="off" aria-label="Buscar por nome">
                 </label>
 
                 <label class="field"> Setor:
-                <select name="setor"> <!--aqui eu puxei o setor que eu chamei lá em cima para vincular ao banco para ter opções que realmente existam no banco de dados-->
+                <select name="setor" id="filtro-setor"> <!--aqui eu puxei o setor que eu chamei lá em cima para vincular ao banco para ter opções que realmente existam no banco de dados-->
                 <option value="">Todos</option>
                 <?php foreach ($setores as $s): ?>
                 <option value="<?= $s['id_setor'] ?>"><?= htmlspecialchars($s['nome_setor']) ?></option>
@@ -155,10 +181,10 @@ $menu = [ //array do menu //aqui
                 </label>
 
                 <label class = "field"> Cargo:
-                <select name="cargo"> <!--Segui a mesma lógica do setor-->
+                <select name="cargo" id="filtro-cargo"> <!--Segui a mesma lógica do setor-->
                 <option value="">Todos</option>
                 <?php foreach ($cargo as $c): ?>
-                <option value="<?= $c['id_cargo'] ?>"><?= htmlspecialchars($c['tipo_cargo']) ?></option>
+                <option value="<?= htmlspecialchars($c['tipo_cargo']) ?>"><?= htmlspecialchars($c['nome_cargo']) ?></option>
                 <?php endforeach; ?>
                 </select>
                 </label>
@@ -171,8 +197,12 @@ $menu = [ //array do menu //aqui
                         <tr><th>Nome</th><th>Cargo/Permissão</th><th>Setor</th><th class="center">Ações</th></tr>
                     </thead>
                     <tbody>
+                        <tr id="sem-resultados" hidden>
+                            <td colspan="4" class="center">Nenhum registro encontrado.</td>
+                        </tr>
                         <?php foreach ($funcionarios as $f): ?>
-                        <tr>
+                        <tr data-cargo-tipo="<?= htmlspecialchars((string) ($f['tipo_cargo'] ?? '')) ?>"
+                            data-setor-id="<?= htmlspecialchars((string) ($f['id_setor'] ?? '')) ?>">
                             <td class="col-nome"><?= htmlspecialchars($f['nome']) ?></td>
                             <td class="col-cargo"><?= htmlspecialchars($f['cargo'] ?? '-') ?></td>
                             <td class="col-setor"><?= htmlspecialchars($f['setor'] ?? '-') ?></td>
@@ -412,10 +442,96 @@ $menu = [ //array do menu //aqui
     </div>
 </div>
 
+<div class="modal" id="modal-conta" role="dialog" aria-modal="true" aria-labelledby="conta-titulo" hidden>
+    <div class="modal-card largo">
+        <div class="modal-head">
+            <h2 id="conta-titulo">Minha conta</h2>
+            <button type="button" class="modal-close" data-fechar aria-label="Fechar">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <p class="detalhes-carregando" id="conta-carregando">Carregando...</p>
+            <p class="modal-erro" id="conta-erro" role="alert" hidden></p>
+
+            <div id="conta-conteudo" class="detalhes-conteudo" hidden>
+                <div class="detalhes-topo">
+                    <h3 class="detalhes-nome" id="conta-nome"></h3>
+                    <span id="conta-status" class="badge"></span>
+                </div>
+
+                <dl class="detalhes-grid" id="conta-grid"></dl>
+
+                <!--Alterar e-mail e telefone-->
+                <section class="detalhes-secao">
+                    <h3>Alterar contato</h3>
+                    <form id="form-conta-dados" class="conta-form" autocomplete="off">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf) ?>">
+                        <input type="hidden" name="acao" value="salvar">
+
+                        <p class="modal-erro" id="conta-dados-erro" role="alert" hidden></p>
+
+                        <div class="linha-2">
+                            <label class="field"> E-mail:
+                                <input type="email" name="email" required maxlength="100">
+                            </label>
+                            <label class="field"> Telefone:
+                                <input type="text" name="telefone" required inputmode="tel" maxlength="15" placeholder="(41) 99999-0000">
+                            </label>
+                        </div>
+
+                        <div class="conta-acoes">
+                            <button type="submit" class="btn-primary" id="conta-dados-salvar">Salvar dados</button>
+                        </div>
+                    </form>
+                </section>
+
+                <!--Alterar senha-->
+                <section class="detalhes-secao">
+                    <h3>Alterar senha</h3>
+                    <form id="form-conta-senha" class="conta-form" autocomplete="off">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf) ?>">
+                        <input type="hidden" name="acao" value="senha">
+
+                        <p class="modal-erro" id="conta-senha-erro" role="alert" hidden></p>
+
+                        <label class="field"> Senha atual:
+                            <input type="password" name="senha_atual" required maxlength="72" autocomplete="current-password">
+                        </label>
+
+                        <div class="linha-2">
+                            <label class="field"> Nova senha:
+                                <input type="password" name="nova_senha" required minlength="8" maxlength="72" autocomplete="new-password">
+                            </label>
+                            <label class="field"> Confirmar nova senha:
+                                <input type="password" name="confirmar_senha" required minlength="8" maxlength="72" autocomplete="new-password">
+                            </label>
+                        </div>
+
+                        <label class="check">
+                            <input type="checkbox" id="conta-mostrar-senha"> Mostrar senha
+                        </label>
+                        <p class="campo-dica">A senha deve ter de 8 a 72 caracteres.</p>
+
+                        <div class="conta-acoes">
+                            <button type="submit" class="btn-primary" id="conta-senha-salvar">Alterar senha</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </div>
+
+        <div class="modal-foot">
+            <button type="button" class="btn-secondary" data-fechar>Fechar</button>
+        </div>
+    </div>
+</div>
+
 <script src="js/menu.js"></script>
 <script src="js/editar.js"></script>
 <script src="js/detalhes.js"></script>
 <script src="js/inativar.js"></script>
 <script src="js/novo.js"></script>
+<script src="js/conta.js"></script>
+<script src="js/filtros.js"></script>
 </body>
 </html>

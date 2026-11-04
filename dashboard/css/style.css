@@ -660,3 +660,54 @@ tbody tr.removendo {
     .side-item span {display: none;} /*só ícones*/
     .filters {flex-wrap: wrap;}
 }
+
+/*Modal "Minha conta" (engrenagem) - cole no final do style.css*/
+.conta-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.conta-acoes {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.conta-acoes .btn-primary:disabled {
+    opacity: .6;
+    cursor: wait;
+}
+
+.modal-body [hidden],
+.detalhes-carregando[hidden] {
+    display: none;
+}
+
+/*Esconde a barra de rolagem dos modais (a rolagem continua funcionando)*/
+.modal-card {
+    scrollbar-width: none;      /* Firefox */
+    -ms-overflow-style: none;   /* Edge antigo */
+}
+
+.modal-card::-webkit-scrollbar {
+    display: none;              /* Chrome, Edge, Safari */
+}
+
+/*Filtro da lista*/
+tbody tr[hidden] {
+    display: none;
+}
+
+tbody tr.ultima-visivel td {
+    border-bottom: none;
+}
+
+#sem-resultados td {
+    padding: 40px 20px;
+    color: #5a5a5a;
+}
+
+main {
+    scrollbar-width: none;      /* Firefox */
+    -ms-overflow-style: none;   /* Edge antigo */
+}

@@ -78,10 +78,6 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($email) > 100) {
     responder(false, 'Informe um e-mail válido.', ['campo' => 'email'], 422);
 }
 
-if (!$idSetor) {
-    responder(false, 'Selecione o setor.', ['campo' => 'id_setor'], 422);
-}
-
 if (!$idCargo) {
     responder(false, 'Selecione o cargo.', ['campo' => 'id_cargo'], 422);
 }
@@ -99,30 +95,33 @@ if (!hash_equals($senha, $confirmar)) {
 }
 
 try {
-    /* 5) Cargo e setor precisam existir e estar ativos */
-    $c = $pdo->prepare("SELECT COUNT(*) FROM cargo WHERE id_cargo = :id AND ativo_cargo = 1");
+    /* 5) O cargo escolhido decide EM QUAL TABELA a pessoa é gravada.
+          O tipo vem do banco (cargo.tipo_cargo), nunca do navegador. */
+    $c = $pdo->prepare("SELECT tipo_cargo FROM cargo WHERE id_cargo = :id AND ativo_cargo = 1");
     $c->execute([':id' => $idCargo]);
-    if ((int) $c->fetchColumn() === 0) {
+    $tipo = $c->fetchColumn();
+
+    $tipo = $tipo === false ? '' : mb_strtolower(trim((string) $tipo));
+    if (!in_array($tipo, ['funcionario', 'administrador', 'gerente'], true)) {
         responder(false, 'Cargo inexistente ou inativo.', ['campo' => 'id_cargo'], 422);
     }
 
-    $s = $pdo->prepare("SELECT COUNT(*) FROM setor WHERE id_setor = :id AND ativo_setor = 1");
-    $s->execute([':id' => $idSetor]);
-    if ((int) $s->fetchColumn() === 0) {
-        responder(false, 'Setor inexistente ou inativo.', ['campo' => 'id_setor'], 422);
+    /* Setor só existe na tabela funcionario */
+    if ($tipo === 'funcionario') {
+        if (!$idSetor) {
+            responder(false, 'Selecione o setor.', ['campo' => 'id_setor'], 422);
+        }
+        $s = $pdo->prepare("SELECT COUNT(*) FROM setor WHERE id_setor = :id AND ativo_setor = 1");
+        $s->execute([':id' => $idSetor]);
+        if ((int) $s->fetchColumn() === 0) {
+            responder(false, 'Setor inexistente ou inativo.', ['campo' => 'id_setor'], 422);
+        }
     }
 
     $hash = password_hash($senha, PASSWORD_BCRYPT, ['cost' => 12]);
 
-    /* 6) Tudo numa transação.
-          A tabela funcionario NÃO tem AUTO_INCREMENT no id, então o próximo id é calculado aqui.
-          O FOR UPDATE trava a leitura: dois cadastros simultâneos não pegam o mesmo id e a
-          checagem de CPF/e-mail duplicado também fica protegida contra corrida. */
+    /* 6) Tudo numa transação */
     $pdo->beginTransaction();
-
-    $proximoId = (int) $pdo->query(
-        "SELECT COALESCE(MAX(id_funcionario), 0) + 1 FROM funcionario FOR UPDATE"
-    )->fetchColumn();
 
     /* CPF e e-mail não podem existir em nenhuma tabela de pessoas */
     $dup = $pdo->prepare(
@@ -149,32 +148,64 @@ try {
         responder(false, 'Este e-mail já está sendo usado por outro cadastro.', ['campo' => 'email'], 422);
     }
 
-    $ins = $pdo->prepare(
-        "INSERT INTO funcionario
-            (id_funcionario, id_cargo, id_setor, telefone_funcionario, cpf_funcionario,
-             email_funcionario, nome_funcionario, senha_funcionario, ativo_funcionario)
-         VALUES
-            (:id, :cargo, :setor, :tel, :cpf, :email, :nome, :senha, 1)"
-    );
-    $ins->execute([
-        ':id'    => $proximoId,
-        ':cargo' => $idCargo,
-        ':setor' => $idSetor,
-        ':tel'   => $telefone,
-        ':cpf'   => $cpf,
-        ':email' => $email,
-        ':nome'  => $nome,
-        ':senha' => $hash,
-    ]);
+    switch ($tipo) {
+        case 'administrador':
+            /* id_administrador é AUTO_INCREMENT */
+            $ins = $pdo->prepare(
+                "INSERT INTO administrador
+                    (id_cargo, ativo_administrador, cpf_administrador, nome_administrador,
+                     email_administrador, telefone_administrador, senha_administrador)
+                 VALUES (:cargo, 1, :cpf, :nome, :email, :tel, :senha)"
+            );
+            $ins->execute([
+                ':cargo' => $idCargo, ':cpf' => $cpf, ':nome' => $nome,
+                ':email' => $email, ':tel' => $telefone, ':senha' => $hash,
+            ]);
+            $novoId = (int) $pdo->lastInsertId();
+            break;
+
+        case 'gerente':
+            /* gerente NÃO tem AUTO_INCREMENT nem cargo/setor: id calculado com trava */
+            $novoId = (int) $pdo->query(
+                "SELECT COALESCE(MAX(id_gerente), 0) + 1 FROM gerente FOR UPDATE"
+            )->fetchColumn();
+            $ins = $pdo->prepare(
+                "INSERT INTO gerente
+                    (id_gerente, nome_gerente, email_gerente, cpf_gerente,
+                     telefone_gerente, senha_gerente, ativo_gerente)
+                 VALUES (:id, :nome, :email, :cpf, :tel, :senha, 1)"
+            );
+            $ins->execute([
+                ':id' => $novoId, ':nome' => $nome, ':email' => $email,
+                ':cpf' => $cpf, ':tel' => $telefone, ':senha' => $hash,
+            ]);
+            break;
+
+        default: /* funcionario: sem AUTO_INCREMENT, id calculado com trava */
+            $novoId = (int) $pdo->query(
+                "SELECT COALESCE(MAX(id_funcionario), 0) + 1 FROM funcionario FOR UPDATE"
+            )->fetchColumn();
+            $ins = $pdo->prepare(
+                "INSERT INTO funcionario
+                    (id_funcionario, id_cargo, id_setor, telefone_funcionario, cpf_funcionario,
+                     email_funcionario, nome_funcionario, senha_funcionario, ativo_funcionario)
+                 VALUES (:id, :cargo, :setor, :tel, :cpf, :email, :nome, :senha, 1)"
+            );
+            $ins->execute([
+                ':id' => $novoId, ':cargo' => $idCargo, ':setor' => $idSetor,
+                ':tel' => $telefone, ':cpf' => $cpf, ':email' => $email,
+                ':nome' => $nome, ':senha' => $hash,
+            ]);
+    }
 
     $pdo->commit();
 
-    responder(true, 'Funcionário cadastrado com sucesso!', ['id' => $proximoId], 201);
+    responder(true, 'Cadastro realizado com sucesso!', ['id' => $novoId, 'tipo' => $tipo], 201);
 
 } catch (PDOException $e) {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    error_log('Erro ao cadastrar funcionário: ' . $e->getMessage());
+    error_log('Erro ao cadastrar: ' . $e->getMessage());
     responder(false, 'Erro ao salvar no banco de dados.', [], 500);
 }
