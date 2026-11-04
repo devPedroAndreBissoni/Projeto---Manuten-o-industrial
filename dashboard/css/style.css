@@ -711,3 +711,8 @@ main {
     scrollbar-width: none;      /* Firefox */
     -ms-overflow-style: none;   /* Edge antigo */
 }
+/*Botão Sair no modal "Minha conta" (fica à esquerda do rodapé)*/
+.form-sair {
+    margin: 0 auto 0 0;
+    background: none;
+}

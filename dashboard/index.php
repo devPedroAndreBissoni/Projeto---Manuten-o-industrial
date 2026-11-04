@@ -208,7 +208,7 @@ $menu = [ //array do menu //aqui
                             <td class="col-setor"><?= htmlspecialchars($f['setor'] ?? '-') ?></td>
                             <td class="actions">
                                 <!--Os data-* levam os dados da linha para o modal de edição-->
-                                <button type="button" class="btn-editar" aria-label="Editar"
+                                <button type="button" class="btn-editar" aria-label="Editar" title="Editar"
                                     data-id="<?= (int) $f['id'] ?>"
                                     data-tipo="<?= htmlspecialchars($f['tipo']) ?>"
                                     data-nome="<?= htmlspecialchars($f['nome']) ?>"
@@ -220,14 +220,14 @@ $menu = [ //array do menu //aqui
                                 </button> 
 
                                 <!--Abre o modal com todas as informações da pessoa (dados buscados em detalhes.php)-->
-                                <button type="button" class="btn-detalhes" aria-label="Detalhes"
+                                <button type="button" class="btn-detalhes" aria-label="Detalhes" title = "Detalhes"
                                     data-id="<?= (int) $f['id'] ?>"
                                     data-tipo="<?= htmlspecialchars($f['tipo']) ?>">
                                     <img src="img/listar.svg" alt="detalhes" class="listar">
                                 </button>
 
                                 <!--Inativar = exclusão lógica (ativo = 0). Os dados continuam no banco-->
-                                <button type="button" class="btn-inativar" aria-label="Inativar"
+                                <button type="button" class="btn-inativar" aria-label="Inativar" title = "Inativar"
                                     data-id="<?= (int) $f['id'] ?>"
                                     data-tipo="<?= htmlspecialchars($f['tipo']) ?>"
                                     data-nome="<?= htmlspecialchars($f['nome']) ?>">
@@ -521,6 +521,11 @@ $menu = [ //array do menu //aqui
         </div>
 
         <div class="modal-foot">
+            <!--Sair: encerra a sessão em sair.php e volta para tela_login/index.php-->
+            <form class="form-sair" method="post" action="sair.php">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf) ?>">
+                <button type="submit" class="btn-primary" id="conta-sair">Sair</button>
+            </form>
             <button type="button" class="btn-secondary" data-fechar>Fechar</button>
         </div>
     </div>
