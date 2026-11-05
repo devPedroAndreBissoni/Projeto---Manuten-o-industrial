@@ -80,10 +80,10 @@ $menu = [ //array do menu //aqui
         "icone" => "img/pessoas.svg"       
     ],
     [
-        "nome" => "Histórico",
-        "arquivo" => 'historico.php',
-        "icone" => "img/historico.svg"
-    ], 
+        "nome" => 'Produtos',
+        "arquivo" => 'produtos.php',
+        "icone" => "img/caixa.svg"
+    ],
     [
         "nome" => 'Máq. e Equip.',
         "arquivo" => '../dashboard/maquinas.php',
@@ -95,10 +95,10 @@ $menu = [ //array do menu //aqui
         "icone" => "img/maleta.svg"
     ],
     [
-        "nome" => 'Produtos',
-        "arquivo" => 'produtos.php',
-        "icone" => "img/caixa.svg"
-    ],
+        "nome" => "Histórico",
+        "arquivo" => 'historico.php',
+        "icone" => "img/historico.svg"
+    ], 
 ];
 
 

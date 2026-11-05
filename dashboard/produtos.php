@@ -58,9 +58,9 @@ $menu = [ //array do menu (igual ao do index.php)
         "icone" => "img/pessoas.svg"
     ],
     [
-        "nome" => "Histórico",
-        "arquivo" => 'historico.php',
-        "icone" => "img/historico.svg"
+        "nome" => 'Produtos',
+        "arquivo" => 'produtos.php',
+        "icone" => "img/caixa.svg"
     ],
     [
         "nome" => 'Máq. e Equip.',
@@ -73,9 +73,9 @@ $menu = [ //array do menu (igual ao do index.php)
         "icone" => "img/maleta.svg"
     ],
     [
-        "nome" => 'Produtos',
-        "arquivo" => 'produtos.php',
-        "icone" => "img/caixa.svg"
+        "nome" => "Histórico",
+        "arquivo" => 'historico.php',
+        "icone" => "img/historico.svg"
     ],
 ];
 

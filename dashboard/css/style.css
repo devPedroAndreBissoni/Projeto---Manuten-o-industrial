@@ -8,6 +8,7 @@
     --azescuro: #2E3B84;
     --branco: #FFFFFF;
     --preto: #1a1a1a;
+    --verde: #7cb693;
     --header-h: 72px;
     --sidebar-w: clamp(150px, 15vw, 240px);
 }
@@ -521,9 +522,9 @@ body.modal-aberto {
 }
 
 .badge-ativo {
-    background: var(--bege);
-    border-color: var(--dourado);
-    color: var(--preto);
+    background: var(--branco);
+    border-color: var(--verde);
+    color: var(--verde);
 }
 
 .badge-inativo {
