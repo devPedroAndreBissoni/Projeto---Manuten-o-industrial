@@ -58,7 +58,7 @@ $menu = [ //array do menu (igual ao do index.php)
         "nome" => 'Produtos',
         "arquivo" => 'produtos.php',
         "icone" => "img/caixa.svg"
-    ],
+    ],    
     [
         "nome" => 'Máq. e Equip.',
         "arquivo" => '../dashboard/maquinas.php',
@@ -207,6 +207,7 @@ $menu = [ //array do menu (igual ao do index.php)
                                 <!--Inativar = exclusão lógica (ativo = 0). Os dados continuam no banco-->
                                 <button type="button" class="btn-inativar" aria-label="Inativar" title="Inativar"
                                     data-id="<?= (int) $m['id'] ?>"
+                                    data-tipo="maquina"
                                     data-nome="<?= htmlspecialchars($m['nome']) ?>">
                                     <img src="img/lixo.svg" alt="desativar" class="inativar">
                                 </button>
@@ -217,6 +218,34 @@ $menu = [ //array do menu (igual ao do index.php)
                 </table>
             </div>
         </main>
+    </div>
+</div>
+
+<!--Modal de confirmação para inativar (js/inativar.js)-->
+<div class="modal" id="modal-inativar" role="dialog" aria-modal="true" aria-labelledby="inativar-titulo" hidden>
+    <div class="modal-card pequeno">
+        <div class="modal-head">
+            <h2 id="inativar-titulo">Inativar Registro</h2>
+            <button type="button" class="modal-close" data-fechar aria-label="Fechar">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <input type="hidden" id="inativar-csrf" value="<?= htmlspecialchars($csrf) ?>">
+
+            <p class="modal-erro" id="inativar-erro" role="alert" hidden></p>
+
+            <p class="confirmar-texto">
+                Deseja inativar <strong id="inativar-nome"></strong>?
+            </p>
+            <p class="confirmar-aviso">
+                O registro deixará de aparecer na lista, mas todos os dados dele continuam guardados no banco.
+            </p>
+        </div>
+
+        <div class="modal-foot">
+            <button type="button" class="btn-secondary" data-fechar>Cancelar</button>
+            <button type="button" class="btn-primary" id="inativar-confirmar">Inativar</button>
+        </div>
     </div>
 </div>
 
@@ -311,6 +340,7 @@ $menu = [ //array do menu (igual ao do index.php)
 </div>
 
 <script src="js/menu.js"></script>
+<script src="js/inativar.js"></script>
 <script src="js/conta.js"></script>
 <script src="js/filtros-lista.js"></script>
 </body>

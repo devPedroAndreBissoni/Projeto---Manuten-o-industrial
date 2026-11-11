@@ -151,8 +151,11 @@
         if (!linhaAtual) return;
 
         linhaAtual.querySelector('.col-nome').textContent  = dados.nome;
-        linhaAtual.querySelector('.col-cargo').textContent = dados.cargo;
-        linhaAtual.querySelector('.col-setor').textContent = dados.setor;
+        // a tela de Histórico não tem coluna de setor, por isso cada célula é opcional
+        const celCargo = linhaAtual.querySelector('.col-cargo');
+        const celSetor = linhaAtual.querySelector('.col-setor');
+        if (celCargo) celCargo.textContent = dados.cargo;
+        if (celSetor) celSetor.textContent = dados.setor;
 
         const botao = linhaAtual.querySelector('.btn-editar');
         botao.dataset.nome     = dados.nome;

@@ -533,8 +533,7 @@ $menu = [ //array do menu (igual ao do index.php)
 <script src="js/menu.js"></script>
 <script src="js/editar.js"></script>
 <script src="js/detalhes.js"></script>
-<script src="js/inativar.js"></script>
-<!--<script src="js/ativar.js"></script> Ainda não existe: ver a explicação sobre o botão Ativar-->
+<script src="js/historico-status.js"></script>
 <script src="js/conta.js"></script>
 <script src="js/filtros-lista.js"></script>
 </body>
