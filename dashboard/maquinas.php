@@ -1,5 +1,4 @@
 <?php
-/* ainda nao foi essa bosta do criar novas maquias entao lembrar de arrumar */
 
 require_once 'conexao.php';
 
@@ -468,6 +467,7 @@ $menu = [ //array do menu (igual ao do index.php)
 <script src="js/conta.js"></script>
 <script src="js/filtros-lista.js"></script>
 <script src="js/listar_maquinas.js"></script>
+<script src="js/novo_maquina.js"></script>
 
 </body>
 </html>

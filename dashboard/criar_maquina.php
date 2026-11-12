@@ -1,5 +1,4 @@
 <?php
-/* ainda nao foi essa bosta do criar novas maquias entao lembrar de arrumar */
 
 /*
  * criar_maquina.php
