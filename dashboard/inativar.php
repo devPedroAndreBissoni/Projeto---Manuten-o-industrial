@@ -1,9 +1,9 @@
 <?php
 /*
  * inativar.php
- * Inativação (exclusão LÓGICA) de funcionário ou administrador.
+ * Inativação (exclusão LÓGICA) de funcionário, gerente, administrador, máquina ou produto.
  * Nada é apagado do banco: apenas a coluna ativo_* passa de 1 para 0.
- * Todos os dados da pessoa continuam guardados e podem ser consultados ou reativados depois.
+ * Todos os dados continuam guardados e podem ser consultados ou reativados depois (ativar.php).
  */
 
 require_once 'conexao.php';
@@ -21,6 +21,17 @@ function responder(bool $ok, string $mensagem, array $extra = [], int $status = 
     exit;
 }
 
+/* Lista FIXA dos tipos aceitos (a mesma do ativar.php):
+   tipo => [tabela, coluna do id, coluna ativo, mensagem de sucesso].
+   Os nomes de tabela/coluna vêm só daqui, nunca de dados digitados. */
+$tipos = [
+    'funcionario'   => ['funcionario',   'id_funcionario',   'ativo_funcionario',   'Funcionário inativado com sucesso!'],
+    'gerente'       => ['gerente',       'id_gerente',       'ativo_gerente',       'Gerente inativado com sucesso!'],
+    'administrador' => ['administrador', 'id_administrador', 'ativo_administrador', 'Administrador inativado com sucesso!'],
+    'maquina'       => ['maquina',       'id_maquina',       'ativo_maquina',       'Máquina inativada com sucesso!'],
+    'produto'       => ['produto',       'id_produto',       'ativo_produto',       'Produto inativado com sucesso!'],
+];
+
 /* 1) Só aceita POST */
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     responder(false, 'Método não permitido.', [], 405);
@@ -33,21 +44,23 @@ if ($tokenSessao === '' || !hash_equals($tokenSessao, $tokenEnviado)) {
     responder(false, 'Sessão expirada. Recarregue a página e tente novamente.', [], 403);
 }
 
-/* 3) Validação */
+/* 3) Validação: o tipo precisa existir na lista fixa acima */
 $tipo = $_POST['tipo'] ?? '';
 $id   = filter_var($_POST['id'] ?? '', FILTER_VALIDATE_INT);
 
-if (!in_array($tipo, ['funcionario', 'administrador'], true) || !$id) {
+if (!is_string($tipo) || !isset($tipos[$tipo]) || !$id) {
     responder(false, 'Registro inválido.', [], 422);
 }
 
+[$tabela, $colId, $colAtivo, $msgSucesso] = $tipos[$tipo];
+
 try {
-    if ($tipo === 'funcionario') {
+    if ($tipo !== 'administrador') {
         // Só UPDATE: nenhum DELETE em lugar nenhum
         $up = $pdo->prepare(
-            "UPDATE funcionario
-                SET ativo_funcionario = 0
-              WHERE id_funcionario = :id AND ativo_funcionario = 1"
+            "UPDATE $tabela
+                SET $colAtivo = 0
+              WHERE $colId = :id AND $colAtivo = 1"
         );
         $up->execute([':id' => $id]);
 
@@ -55,7 +68,7 @@ try {
             responder(false, 'Registro não encontrado ou já inativo.', [], 404);
         }
 
-        responder(true, 'Funcionário inativado com sucesso!');
+        responder(true, $msgSucesso);
     }
 
     /* Administrador: não deixa inativar o último ativo (evita ficar sem ninguém com acesso).
@@ -84,7 +97,7 @@ try {
     }
 
     $pdo->commit();
-    responder(true, 'Administrador inativado com sucesso!');
+    responder(true, $msgSucesso);
 
 } catch (PDOException $e) {
     if ($pdo->inTransaction()) {

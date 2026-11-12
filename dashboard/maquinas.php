@@ -1,4 +1,5 @@
 <?php
+/* ainda nao foi essa bosta do criar novas maquias entao lembrar de arrumar */
 
 require_once 'conexao.php';
 
@@ -90,7 +91,7 @@ $menu = [ //array do menu (igual ao do index.php)
             <!--Topo-->
         <header class="topbar">
             <div class = "brand"> <!--classe da logo-->
-                <img src="img/kidzy-logo.svg" alt="Kidzy Brinquedos" class="logo">
+                <img src="img/kidzy-logo.svg" alt="Kidzy Brinquedos" title="Logomarca" class="logo">
                 <h1>KIDZY Brinquedos</h1>
             </div>
 
@@ -194,8 +195,9 @@ $menu = [ //array do menu (igual ao do index.php)
                                     <img src="img/chave.svg" alt="chave" class="chave">
                                 </button>
 
-                                <button type="button" class="btn-detalhes" aria-label="Detalhes" title="Detalhes"
-                                    data-id="<?= (int) $m['id'] ?>">
+                                <button type="button" class="btn-detalhes" aria-label="Detalhes" title = "Detalhes"
+                                    data-id="<?= (int) $m['id'] ?>"
+                                    data-tipo="<?= htmlspecialchars($m['maquina']) ?>">
                                     <img src="img/listar.svg" alt="detalhes" class="listar">
                                 </button>
 
@@ -246,6 +248,86 @@ $menu = [ //array do menu (igual ao do index.php)
             <button type="button" class="btn-secondary" data-fechar>Cancelar</button>
             <button type="button" class="btn-primary" id="inativar-confirmar">Inativar</button>
         </div>
+    </div>
+</div>
+
+<!--Modal de detalhes-->
+<div class="modal" id="modal-detalhes" role="dialog" aria-modal="true" aria-labelledby="detalhes-titulo" hidden>
+    <div class="modal-card largo">
+        <div class="modal-head">
+            <h2 id="detalhes-titulo">Detalhes</h2>
+            <button type="button" class="modal-close" data-fechar aria-label="Fechar">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <input type="hidden" id="detalhes-csrf" value="<?= htmlspecialchars($csrf) ?>">
+
+            <p class="detalhes-carregando" id="detalhes-carregando">Carregando...</p>
+            <p class="modal-erro" id="detalhes-erro" role="alert" hidden></p>
+
+            <div id="detalhes-conteudo" class="detalhes-conteudo" hidden>
+                <div class="detalhes-topo">
+                    <h3 class="detalhes-nome" id="detalhes-nome"></h3>
+                    <span id="detalhes-status" class="badge"></span>
+                </div>
+
+                <dl class="detalhes-grid" id="detalhes-grid"></dl>
+
+                <section class="detalhes-secao" id="detalhes-resp-secao">
+                    <h3>Responsáveis</h3>
+                    <ul class="detalhes-lista" id="detalhes-resp"></ul>
+                </section>
+
+                <section class="detalhes-secao">
+                    <h3>Ordens de serviço</h3>
+                    <ul class="detalhes-lista" id="detalhes-os"></ul>
+                </section>
+            </div>
+        </div>
+
+        <div class="modal-foot">
+            <button type="button" class="btn-secondary" data-fechar>Fechar</button>
+        </div>
+    </div>
+</div>
+
+<!--Modal de edição (js/editar_maquina.js)-->
+<div class="modal" id="modal-editar" role="dialog" aria-modal="true" aria-labelledby="editar-titulo" hidden>
+    <div class="modal-card">
+        <div class="modal-head">
+            <h2 id="editar-titulo">Editar Máquina</h2>
+            <button type="button" class="modal-close" data-fechar aria-label="Fechar">&times;</button>
+        </div>
+
+        <form id="form-editar" autocomplete="off">
+            <div class="modal-body">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf) ?>">
+                <input type="hidden" name="id">
+
+                <p class="modal-erro" id="editar-erro" role="alert" hidden></p>
+
+                <label class="field"> Nome:
+                    <input type="text" name="nome" required minlength="3" maxlength="100">
+                </label>
+
+                <label class="field"> Modelo:
+                    <input type="text" name="tipo_maquina" required minlength="2" maxlength="50">
+                </label>
+
+                <label class="field"> Status:
+                    <select name="funcionamento" required>
+                        <option value="Operacional">Operacional</option>
+                        <option value="Em manutenção">Em manutenção</option>
+                        <option value="Parada">Parada</option>
+                    </select>
+                </label>
+            </div>
+
+            <div class="modal-foot">
+                <button type="button" class="btn-secondary" data-fechar>Cancelar</button>
+                <button type="submit" class="btn-primary" id="editar-salvar">Salvar</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -339,9 +421,53 @@ $menu = [ //array do menu (igual ao do index.php)
     </div>
 </div>
 
+<!--Modal de novo registro (cadastro de máquina) - js/novo_maquina.js-->
+<div class="modal" id="modal-novo" role="dialog" aria-modal="true" aria-labelledby="novo-titulo" hidden>
+    <div class="modal-card medio">
+        <div class="modal-head">
+            <h2 id="novo-titulo">Nova Máquina</h2>
+            <button type="button" class="modal-close" data-fechar aria-label="Fechar">&times;</button>
+        </div>
+
+        <form id="form-novo" autocomplete="off">
+            <div class="modal-body">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf) ?>">
+
+                <p class="modal-erro" id="novo-erro" role="alert" hidden></p>
+
+                <label class="field"> Nome:
+                    <input type="text" name="nome" required minlength="3" maxlength="100" placeholder="Ex.: Torno CNC TC-500">
+                </label>
+
+                <div class="linha-2">
+                    <label class="field"> Modelo:
+                        <input type="text" name="tipo_maquina" required minlength="2" maxlength="50" placeholder="Ex.: Torno">
+                    </label>
+
+                    <label class="field"> Status:
+                        <select name="funcionamento" required>
+                            <option value="Operacional" selected>Operacional</option>
+                            <option value="Em manutenção">Em manutenção</option>
+                            <option value="Parada">Parada</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+
+            <div class="modal-foot">
+                <button type="button" class="btn-secondary" data-fechar>Cancelar</button>
+                <button type="submit" class="btn-primary" id="novo-salvar">Cadastrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="js/editar_maquina.js"></script>
 <script src="js/menu.js"></script>
 <script src="js/inativar.js"></script>
 <script src="js/conta.js"></script>
 <script src="js/filtros-lista.js"></script>
+<script src="js/listar_maquinas.js"></script>
+
 </body>
 </html>

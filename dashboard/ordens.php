@@ -15,7 +15,7 @@ $tituloPagina = 'Histórico'; ?>
             <!--Topo-->
         <header class="topbar">
             <div class = "brand"> <!--classe da logo-->
-                <img src="img/kidzy-logo.svg" alt="Kidzy Brinquedos" class="logo">
+                <img src="img/kidzy-logo.svg" alt="Kidzy Brinquedos" title="Logomarca" class="logo">
                 <h1>KIDZY Brinquedos</h1>
             </div>
 
