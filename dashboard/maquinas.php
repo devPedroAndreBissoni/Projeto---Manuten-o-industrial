@@ -1,6 +1,7 @@
 <?php
 
 require_once 'conexao.php';
+require_once 'ordens_config.php'; // listas de tipo/problema/urgência da ordem de serviço
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -461,6 +462,8 @@ $menu = [ //array do menu (igual ao do index.php)
     </div>
 </div>
 
+<?php $maquinasOrdem = $maquinas; include 'modal_ordem.php'; ?> <!--Modal de nova ordem de serviço (botão da chave)-->
+
 <script src="js/editar_maquina.js"></script>
 <script src="js/menu.js"></script>
 <script src="js/inativar.js"></script>
@@ -468,6 +471,7 @@ $menu = [ //array do menu (igual ao do index.php)
 <script src="js/filtros-lista.js"></script>
 <script src="js/listar_maquinas.js"></script>
 <script src="js/novo_maquina.js"></script>
+<script src="js/ordens.js"></script>
 
 </body>
 </html>

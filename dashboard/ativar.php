@@ -29,6 +29,7 @@ $tipos = [
     'administrador' => ['administrador', 'id_administrador', 'ativo_administrador', 'Administrador ativado com sucesso!'],
     'maquina'       => ['maquina',       'id_maquina',       'ativo_maquina',       'Máquina ativada com sucesso!'],
     'produto'       => ['produto',       'id_produto',       'ativo_produto',       'Produto ativado com sucesso!'],
+    'ordem'         => ['`ordem_de_serviço`', 'id_ords',     'ativo_ords',          'Ordem de serviço ativada com sucesso!'],
 ];
 
 /* 1) Só aceita POST */
