@@ -31,7 +31,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // 1) Procura em funcionario (funcionário e gerente)
     $sql = "SELECT f.id_funcionario AS id, f.nome_funcionario AS nome,
     f.email_funcionario AS email, f.senha_funcionario AS senha_hash,
-    c.nome_cargo AS cargo
+    c.nome_cargo AS cargo, 'funcionario' AS origem,
+    f.ativo_funcionario AS ativo
     FROM funcionario f
     LEFT JOIN cargo c ON c.id_cargo = f.id_cargo
     WHERE f.email_funcionario = ?";
@@ -46,7 +47,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!$dados) {
         $sql = "SELECT id_administrador AS id, nome_administrador AS nome,
                        email_administrador AS email, senha_administrador AS senha_hash,
-                       'administrador' AS cargo
+                       'administrador' AS cargo, 'administrador' AS origem,
+                       ativo_administrador AS ativo
                 FROM administrador
                 WHERE email_administrador = ?";
 
@@ -60,7 +62,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!$dados) {
         $sql = "SELECT id_gerente AS id, nome_gerente AS nome,
                        email_gerente AS email, senha_gerente AS senha_hash,
-                       'gerente' AS cargo
+                       'gerente' AS cargo, 'gerente' AS origem,
+                       ativo_gerente AS ativo
                 FROM gerente
                 WHERE email_gerente = ?";
 
@@ -78,6 +81,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (!password_verify($senha_digitada, $dados["senha_hash"] ?? "")) {
 
         echo "Senha incorreta.";
+
+    } elseif ((int) ($dados["ativo"] ?? 0) !== 1) {
+
+        // Conta inativada: os dados continuam no banco, mas o acesso fica bloqueado
+        echo "Esta conta está inativa. Procure um administrador.";
 
     } else {
 
@@ -98,6 +106,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION["nome"]  = $dados["nome"];
             $_SESSION["email"] = $dados["email"];
             $_SESSION["cargo"] = $cargo;
+
+            // Chaves lidas pelo dashboard (nome no topo, "Minha conta", lista de funcionários).
+            // O tipo é a TABELA onde o usuário foi achado (não o cargo): um funcionário com
+            // cargo Administrador continua sendo da tabela funcionario, e o id só vale nela.
             $_SESSION["usuario_id"]   = (int) $dados["id"];
             $_SESSION["usuario_tipo"] = $dados["origem"];
 

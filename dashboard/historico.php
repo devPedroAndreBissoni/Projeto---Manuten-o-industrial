@@ -14,7 +14,7 @@ $csrf = $_SESSION['csrf_token'];
 
 /* Nome de quem está logado (mostrado no topo). Mesma lógica do index.php.
    Os nomes de tabela/coluna vêm desta lista fixa, nunca de dados digitados. */
-require_once 'resolver_usuario.php';
+require_once __DIR__ . '/resolver_usuario.php';
 resolverUsuarioSessao($pdo); // garante usuario_id/usuario_tipo na sessão
 
 $tabelasUsuario = [
@@ -57,6 +57,7 @@ $sql = "SELECT f.id_funcionario       AS id,
         FROM funcionario f
         INNER JOIN cargo c ON c.id_cargo = f.id_cargo
         INNER JOIN setor s ON s.id_setor = f.id_setor
+        WHERE NOT (:tipo_f = 'funcionario' AND f.id_funcionario = :id_f) /*não mostra quem está logado*/
 
         UNION ALL
 
@@ -65,6 +66,7 @@ $sql = "SELECT f.id_funcionario       AS id,
                NULL, NULL, 'Gerente', 'Geral', g.ativo_gerente,
                NULL, NULL, NULL, NULL
         FROM gerente g
+        WHERE NOT (:tipo_g = 'gerente' AND g.id_gerente = :id_g) /*não mostra quem está logado*/
 
         UNION ALL
 
@@ -73,6 +75,7 @@ $sql = "SELECT f.id_funcionario       AS id,
                NULL, NULL, 'Administrador', 'Geral', a.ativo_administrador,
                NULL, NULL, NULL, NULL
         FROM administrador a
+        WHERE NOT (:tipo_a = 'administrador' AND a.id_administrador = :id_a) /*não mostra quem está logado*/
 
         UNION ALL
 
@@ -93,7 +96,16 @@ $sql = "SELECT f.id_funcionario       AS id,
 
         ORDER BY nome";
 
-$registros = $pdo->query($sql)->fetchAll();
+/* A própria pessoa não aparece no histórico (assim ela não consegue se inativar).
+   Compara tipo + id, porque os ids se repetem entre as tabelas. */
+$meuId = (int) ($_SESSION['usuario_id'] ?? 0);
+$stReg = $pdo->prepare($sql);
+$stReg->execute([
+    ':tipo_f' => $tipoUsuario, ':id_f' => $meuId,
+    ':tipo_g' => $tipoUsuario, ':id_g' => $meuId,
+    ':tipo_a' => $tipoUsuario, ':id_a' => $meuId,
+]);
+$registros = $stReg->fetchAll();
 
 /* Setores e cargos: só para preencher os selects do modal de edição (igual ao index.php) */
 $setores = $pdo->query("SELECT id_setor, nome_setor FROM setor")->fetchAll();

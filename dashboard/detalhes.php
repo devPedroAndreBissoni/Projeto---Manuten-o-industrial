@@ -36,7 +36,7 @@ if ($tokenSessao === '' || !hash_equals($tokenSessao, $tokenEnviado)) {
 $tipo = $_POST['tipo'] ?? '';
 $id   = filter_var($_POST['id'] ?? '', FILTER_VALIDATE_INT);
 
-if (!in_array($tipo, ['funcionario', 'administrador'], true) || !$id) {
+if (!in_array($tipo, ['funcionario', 'administrador', 'gerente'], true) || !$id) {
     responder(false, 'Registro inválido.', [], 422);
 }
 
@@ -76,6 +76,21 @@ try {
         );
         $r->execute([':id1' => $id, ':id2' => $id]);
         $responsaveis = $r->fetchAll();
+    } elseif ($tipo === 'gerente') {
+        $q = $pdo->prepare(
+            "SELECT id_gerente        AS id,
+                    nome_gerente      AS nome,
+                    cpf_gerente       AS cpf,
+                    email_gerente     AS email,
+                    telefone_gerente  AS telefone,
+                    ativo_gerente     AS ativo,
+                    'Gerente'         AS cargo,
+                    'Geral'           AS setor
+               FROM gerente
+              WHERE id_gerente = :id"
+        );
+        $q->execute([':id' => $id]);
+        $dados = $q->fetch();
     } else {
         $q = $pdo->prepare(
             "SELECT id_administrador        AS id,
@@ -104,8 +119,12 @@ try {
           Fica em um try próprio: se der problema aqui, o resto do modal ainda abre. */
     $ordens = [];
     try {
-        $tabelaLigacao = $tipo === 'funcionario' ? 'chama_funcionario_ords'    : 'chama_administrador_ords';
-        $colunaId      = $tipo === 'funcionario' ? 'id_funcionario'            : 'id_administrador';
+        $ligacoes = [
+            'funcionario'   => ['chama_funcionario_ords',   'id_funcionario'],
+            'administrador' => ['chama_administrador_ords', 'id_administrador'],
+            'gerente'       => ['chama_gerente_ords',       'id_gerente'],
+        ];
+        [$tabelaLigacao, $colunaId] = $ligacoes[$tipo];
 
         $o = $pdo->prepare(
             "SELECT o.id_ords               AS id,

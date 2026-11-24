@@ -63,6 +63,15 @@ $sql = "SELECT f.id_funcionario       AS id,
         WHERE a.ativo_administrador = 1
           AND NOT (:tipo_a = 'administrador' AND a.id_administrador = :id_a) /*não mostra quem está logado*/
 
+        UNION ALL /*gerentes ficam na própria tabela, por isso precisam do seu SELECT*/
+
+        SELECT g.id_gerente, 'gerente', g.nome_gerente,
+               g.email_gerente, g.telefone_gerente,
+               NULL, NULL, 'Gerente', 'Geral', 'gerente'
+        FROM gerente g
+        WHERE g.ativo_gerente = 1
+          AND NOT (:tipo_g = 'gerente' AND g.id_gerente = :id_g) /*não mostra quem está logado*/
+
         ORDER BY nome";
 
 /* O id do usuário logado vem da sessão; o tipo diz em qual tabela ele está (ids se repetem entre tabelas) */
@@ -72,6 +81,8 @@ $stLista->execute([
     ':id_f'   => (int) ($_SESSION['usuario_id'] ?? 0),
     ':tipo_a' => $tipoUsuario,
     ':id_a'   => (int) ($_SESSION['usuario_id'] ?? 0),
+    ':tipo_g' => $tipoUsuario,
+    ':id_g'   => (int) ($_SESSION['usuario_id'] ?? 0),
 ]);
 $funcionarios = $stLista->fetchAll();
 
