@@ -744,3 +744,13 @@ main {
 .tabela-ordens td {
     font-size: 22px;
 }
+/*Campo de data (modal de novo produto) - mesmo visual dos outros campos*/
+.modal-body input[type="date"] {
+    width: 100%;
+    border: 1px solid var(--preto);
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: #fffaee;
+    color: var(--preto);
+    font-size: 18px;
+}

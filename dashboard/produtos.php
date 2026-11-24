@@ -16,7 +16,7 @@ $csrf = $_SESSION['csrf_token'];
    A sessão (usuario_id / usuario_tipo) é gravada pelo login; o bloco temporário que
    simula o login continua só no index.php e deve ser apagado de lá quando o login existir.
    Os nomes de tabela/coluna vêm desta lista fixa, nunca de dados digitados. */
-require_once 'resolver_usuario.php';
+require_once __DIR__ . '/resolver_usuario.php';
 resolverUsuarioSessao($pdo); // garante usuario_id/usuario_tipo na sessão
 
 $tabelasUsuario = [
@@ -331,9 +331,139 @@ $menu = [ //array do menu (igual ao do index.php)
     </div>
 </div>
 
+<!--Modal de edição (js/editar_produto.js)-->
+<div class="modal" id="modal-editar" role="dialog" aria-modal="true" aria-labelledby="editar-titulo" hidden>
+    <div class="modal-card">
+        <div class="modal-head">
+            <h2 id="editar-titulo">Editar Produto</h2>
+            <button type="button" class="modal-close" data-fechar aria-label="Fechar">&times;</button>
+        </div>
+
+        <form id="form-editar" autocomplete="off">
+            <div class="modal-body">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf) ?>">
+                <input type="hidden" name="id">
+
+                <p class="modal-erro" id="editar-erro" role="alert" hidden></p>
+
+                <label class="field"> Nome:
+                    <input type="text" name="nome" required minlength="3" maxlength="100">
+                </label>
+
+                <label class="field"> Categoria:
+                    <select name="id_categoria" required>
+                        <?php foreach ($categorias as $c): ?>
+                        <option value="<?= (int) $c['id_categoria'] ?>"><?= htmlspecialchars($c['tipo_categoria']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+
+                <div class="linha-2">
+                    <label class="field"> Estoque:
+                        <input type="text" name="estoque" required inputmode="numeric" maxlength="12">
+                    </label>
+
+                    <label class="field"> Data de produção:
+                        <input type="date" name="data_producao" required min="2000-01-01">
+                    </label>
+                </div>
+            </div>
+
+            <div class="modal-foot">
+                <button type="button" class="btn-secondary" data-fechar>Cancelar</button>
+                <button type="submit" class="btn-primary" id="editar-salvar">Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!--Modal de histórico do produto (js/historico_produto.js)-->
+<div class="modal" id="modal-historico" role="dialog" aria-modal="true" aria-labelledby="historico-titulo" hidden>
+    <div class="modal-card largo">
+        <div class="modal-head">
+            <h2 id="historico-titulo">Histórico do Produto</h2>
+            <button type="button" class="modal-close" data-fechar aria-label="Fechar">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <input type="hidden" id="historico-csrf" value="<?= htmlspecialchars($csrf) ?>">
+
+            <p class="detalhes-carregando" id="historico-carregando">Carregando...</p>
+            <p class="modal-erro" id="historico-erro" role="alert" hidden></p>
+
+            <div id="historico-conteudo" class="detalhes-conteudo" hidden>
+                <div class="detalhes-topo">
+                    <h3 class="detalhes-nome" id="historico-nome"></h3>
+                    <span id="historico-status" class="badge"></span>
+                </div>
+
+                <dl class="detalhes-grid" id="historico-grid"></dl>
+
+                <section class="detalhes-secao">
+                    <h3>Responsáveis</h3>
+                    <ul class="detalhes-lista" id="historico-resp"></ul>
+                </section>
+            </div>
+        </div>
+
+        <div class="modal-foot">
+            <button type="button" class="btn-secondary" data-fechar>Fechar</button>
+        </div>
+    </div>
+</div>
+
+<!--Modal de novo registro (cadastro de produto) - js/novo_produto.js-->
+<div class="modal" id="modal-novo" role="dialog" aria-modal="true" aria-labelledby="novo-titulo" hidden>
+    <div class="modal-card medio">
+        <div class="modal-head">
+            <h2 id="novo-titulo">Novo Produto</h2>
+            <button type="button" class="modal-close" data-fechar aria-label="Fechar">&times;</button>
+        </div>
+
+        <form id="form-novo" autocomplete="off">
+            <div class="modal-body">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf) ?>">
+
+                <p class="modal-erro" id="novo-erro" role="alert" hidden></p>
+
+                <label class="field"> Nome:
+                    <input type="text" name="nome" required minlength="3" maxlength="100" placeholder="Ex.: Caixa Plástica 20L">
+                </label>
+
+                <label class="field"> Categoria:
+                    <select name="id_categoria" required>
+                        <option value="" selected disabled>Selecione...</option>
+                        <?php foreach ($categorias as $c): ?>
+                        <option value="<?= (int) $c['id_categoria'] ?>"><?= htmlspecialchars($c['tipo_categoria']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+
+                <div class="linha-2">
+                    <label class="field"> Estoque:
+                        <input type="text" name="estoque" required inputmode="numeric" maxlength="12" placeholder="0">
+                    </label>
+
+                    <label class="field"> Data de produção:
+                        <input type="date" name="data_producao" required min="2000-01-01">
+                    </label>
+                </div>
+            </div>
+
+            <div class="modal-foot">
+                <button type="button" class="btn-secondary" data-fechar>Cancelar</button>
+                <button type="submit" class="btn-primary" id="novo-salvar">Cadastrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script src="js/menu.js"></script>
 <script src="js/inativar.js"></script>
 <script src="js/conta.js"></script>
 <script src="js/filtros-lista.js"></script>
+<script src="js/novo_produto.js"></script>
+<script src="js/editar_produto.js"></script>
+<script src="js/historico_produto.js"></script>
 </body>
 </html>
