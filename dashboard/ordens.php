@@ -15,12 +15,15 @@ $csrf = $_SESSION['csrf_token'];
 
 /* Nome de quem está logado (mostrado no topo). Mesma lógica das outras telas.
    Os nomes de tabela/coluna vêm desta lista fixa, nunca de dados digitados. */
+require_once 'resolver_usuario.php';
+resolverUsuarioSessao($pdo); // garante usuario_id/usuario_tipo na sessão
+
 $tabelasUsuario = [
     'funcionario'   => ['funcionario',   'nome_funcionario',   'id_funcionario'],
     'administrador' => ['administrador', 'nome_administrador', 'id_administrador'],
     'gerente'       => ['gerente',       'nome_gerente',       'id_gerente'],
 ];
-$nomeUsuario = 'Usuário';
+$nomeUsuario = $_SESSION['nome'] ?? 'Usuário'; // reserva: nome gravado pelo login
 $tipoUsuario = $_SESSION['usuario_tipo'] ?? '';
 if (isset($tabelasUsuario[$tipoUsuario])) {
     [$tabU, $colNome, $colId] = $tabelasUsuario[$tipoUsuario];

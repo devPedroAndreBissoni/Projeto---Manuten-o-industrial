@@ -17,6 +17,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+require_once __DIR__ . '/resolver_usuario.php';
+resolverUsuarioSessao($pdo); // garante usuario_id/usuario_tipo na sessão
+
 header('Content-Type: application/json; charset=utf-8');
 
 function responder(bool $ok, string $mensagem, array $extra = [], int $status = 200): void

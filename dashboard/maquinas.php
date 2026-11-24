@@ -17,12 +17,15 @@ $csrf = $_SESSION['csrf_token'];
    A sessão (usuario_id / usuario_tipo) é gravada pelo login; o bloco temporário que
    simula o login continua só no index.php e deve ser apagado de lá quando o login existir.
    Os nomes de tabela/coluna vêm desta lista fixa, nunca de dados digitados. */
+require_once 'resolver_usuario.php';
+resolverUsuarioSessao($pdo); // garante usuario_id/usuario_tipo na sessão
+
 $tabelasUsuario = [
     'funcionario'   => ['funcionario',   'nome_funcionario',   'id_funcionario'],
     'administrador' => ['administrador', 'nome_administrador', 'id_administrador'],
     'gerente'       => ['gerente',       'nome_gerente',       'id_gerente'],
 ];
-$nomeUsuario = 'Usuário';
+$nomeUsuario = $_SESSION['nome'] ?? 'Usuário'; // reserva: nome gravado pelo login
 $tipoUsuario = $_SESSION['usuario_tipo'] ?? '';
 if (isset($tabelasUsuario[$tipoUsuario])) {
     [$tabU, $colNome, $colId] = $tabelasUsuario[$tipoUsuario];

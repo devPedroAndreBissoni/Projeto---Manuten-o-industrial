@@ -98,6 +98,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION["nome"]  = $dados["nome"];
             $_SESSION["email"] = $dados["email"];
             $_SESSION["cargo"] = $cargo;
+            $_SESSION["usuario_id"]   = (int) $dados["id"];
+            $_SESSION["usuario_tipo"] = $dados["origem"];
 
             header("Location: " . $destinos[$cargo]);
             exit();

@@ -12,23 +12,21 @@ if (empty($_SESSION['csrf_token'])) {
 }
 $csrf = $_SESSION['csrf_token'];
 
-/* ===== TEMPORÁRIO: simula o usuário logado até existir a tela de login =====
-   O login de verdade deve gravar estas duas chaves e este bloco deve ser APAGADO.
-   tipo: 'administrador', 'gerente' ou 'funcionario' | id: id na tabela correspondente */
-if (empty($_SESSION['usuario_id'])) {
-    $_SESSION['usuario_id']   = 1;
-    $_SESSION['usuario_tipo'] = 'administrador';
-}
-/* ===== fim do bloco temporário ===== */
+/* O login grava $_SESSION['usuario_id'] e $_SESSION['usuario_tipo']
+   ('administrador', 'gerente' ou 'funcionario'). O antigo bloco temporário que
+   forçava o administrador 1 foi removido: era ele que mostrava sempre o mesmo nome. */
 
 /* Nome de quem está logado (mostrado no topo). Reaproveita o $pdo que já vem do conexao.php.
    Os nomes de tabela/coluna vêm desta lista fixa, nunca de dados digitados. */
+require_once __DIR__ . '/resolver_usuario.php';
+resolverUsuarioSessao($pdo); // garante usuario_id/usuario_tipo na sessão
+
 $tabelasUsuario = [
     'funcionario'   => ['funcionario',   'nome_funcionario',   'id_funcionario'],
     'administrador' => ['administrador', 'nome_administrador', 'id_administrador'],
     'gerente'       => ['gerente',       'nome_gerente',       'id_gerente'],
 ];
-$nomeUsuario = 'Usuário';
+$nomeUsuario = $_SESSION['nome'] ?? 'Usuário'; // reserva: nome gravado pelo login
 $tipoUsuario = $_SESSION['usuario_tipo'] ?? '';
 if (isset($tabelasUsuario[$tipoUsuario])) {
     [$tabU, $colNome, $colId] = $tabelasUsuario[$tipoUsuario];
@@ -54,6 +52,7 @@ $sql = "SELECT f.id_funcionario       AS id,
         INNER JOIN cargo c ON c.id_cargo = f.id_cargo /*INNER JOIN só pode ser usado para tabelas diferentes*/
         INNER JOIN setor s ON s.id_setor = f.id_setor
         WHERE f.ativo_funcionario = 1 /*Inativos continuam no banco, só não aparecem aqui*/
+          AND NOT (:tipo_f = 'funcionario' AND f.id_funcionario = :id_f) /*não mostra quem está logado*/
 
         UNION ALL /*UNION ALL -> junta todas as tabelas em uma, puxando as informações das outras duas para a principal*/
 
@@ -62,10 +61,19 @@ $sql = "SELECT f.id_funcionario       AS id,
                NULL, NULL, 'Administrador', 'Geral', 'administrador'
         FROM administrador a
         WHERE a.ativo_administrador = 1
+          AND NOT (:tipo_a = 'administrador' AND a.id_administrador = :id_a) /*não mostra quem está logado*/
 
         ORDER BY nome";
-        
-$funcionarios = $pdo->query($sql)->fetchAll();
+
+/* O id do usuário logado vem da sessão; o tipo diz em qual tabela ele está (ids se repetem entre tabelas) */
+$stLista = $pdo->prepare($sql);
+$stLista->execute([
+    ':tipo_f' => $tipoUsuario,
+    ':id_f'   => (int) ($_SESSION['usuario_id'] ?? 0),
+    ':tipo_a' => $tipoUsuario,
+    ':id_a'   => (int) ($_SESSION['usuario_id'] ?? 0),
+]);
+$funcionarios = $stLista->fetchAll();
 
 $setores = $pdo->query("SELECT id_setor, nome_setor FROM setor")->fetchAll();
 
