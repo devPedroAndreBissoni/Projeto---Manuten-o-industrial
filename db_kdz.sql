@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 05/11/2026 às 12:28
+-- Tempo de geração: 25/11/2026 às 12:32
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -44,7 +44,11 @@ CREATE TABLE `administrador` (
 
 INSERT INTO `administrador` (`id_administrador`, `id_cargo`, `ativo_administrador`, `cpf_administrador`, `nome_administrador`, `email_administrador`, `telefone_administrador`, `senha_administrador`) VALUES
 (1, 0, 1, '11111111111', 'Admin Teste', 'admin@kdz.com', '41999990001', '$2b$12$BLjoVZQgYBnnAoy1Cw8/Vu0BLM8WSQEMvosyfYKIG32KS8apHyKDK'),
-(2, 1, 0, '11111111112', 'Admin Teste 2', 'admin2@kdz.com', '41999990002', '$2b$12$BLjoVZQgYBnnAoy1Cw8/Vu0BLM8WSQEMvosyfYKIG32KS8apHyKDK');
+(2, 1, 0, '11111111112', 'Admin Teste 2', 'admin2@kdz.com', '41999990002', '$2b$12$BLjoVZQgYBnnAoy1Cw8/Vu0BLM8WSQEMvosyfYKIG32KS8apHyKDK'),
+(3, 1, 1, '54861770033', 'Lucas Emanuel', 'lucasemanuel@kdz.com', '41291837218', '$2y$12$WdxyIheGFQI2JYkolux4EO1B5VicbxXi1ws/T2PdqIBH2N0xprYcO'),
+(4, 1, 1, '59168978804', 'Felipe Alexandre', 'felps@kdz.com', '41991014814', '$2y$12$J3T5o0UJBe707nDFuA6ACOu8SWGSAJezQbmsAI..fZD50GHPjo692'),
+(5, 1, 1, '43195216922', 'Eduardo Fischer', 'eduardo@kdz.com', '41991298137', '$2y$12$CkF.58RH5tdn8gdVP9OgpO4uVQC/uE6lr/bunPa3bmI2NgDFXv9WW'),
+(6, 1, 1, '89045866153', 'Isabela', 'isa@kdz.com', '41991232139', '$2y$12$1L0U./ULMyKHJ0JfyifovetkGl.viNiBzgZNeSw6vqtgDEEQDv0dO');
 
 -- --------------------------------------------------------
 
@@ -128,6 +132,85 @@ CREATE TABLE `chama_gerente_ords` (
 -- --------------------------------------------------------
 
 --
+-- Estrutura para tabela `estoque_mensal`
+--
+
+CREATE TABLE `estoque_mensal` (
+  `id_estoque_mensal` int(11) NOT NULL,
+  `id_produto` int(11) NOT NULL,
+  `mes` date NOT NULL,
+  `quantidade` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `estoque_mensal`
+--
+
+INSERT INTO `estoque_mensal` (`id_estoque_mensal`, `id_produto`, `mes`, `quantidade`) VALUES
+(1, 4, '2025-12-01', 650),
+(2, 4, '2026-01-01', 720),
+(3, 4, '2026-02-01', 910),
+(4, 4, '2026-03-01', 1050),
+(5, 4, '2026-04-01', 880),
+(6, 4, '2026-05-01', 760),
+(7, 4, '2026-06-01', 690),
+(8, 4, '2026-07-01', 940),
+(9, 4, '2026-08-01', 1120),
+(10, 4, '2026-09-01', 870),
+(11, 4, '2026-10-01', 730),
+(12, 4, '2026-11-01', 800),
+(13, 1, '2025-12-01', 420),
+(14, 1, '2026-01-01', 480),
+(15, 1, '2026-02-01', 530),
+(16, 1, '2026-03-01', 610),
+(17, 1, '2026-04-01', 450),
+(18, 1, '2026-05-01', 390),
+(19, 1, '2026-06-01', 470),
+(20, 1, '2026-07-01', 560),
+(21, 1, '2026-08-01', 640),
+(22, 1, '2026-09-01', 520),
+(23, 1, '2026-10-01', 480),
+(24, 1, '2026-11-01', 500),
+(25, 2, '2025-12-01', 180),
+(26, 2, '2026-01-01', 210),
+(27, 2, '2026-02-01', 260),
+(28, 2, '2026-03-01', 300),
+(29, 2, '2026-04-01', 240),
+(30, 2, '2026-05-01', 190),
+(31, 2, '2026-06-01', 220),
+(32, 2, '2026-07-01', 280),
+(33, 2, '2026-08-01', 310),
+(34, 2, '2026-09-01', 230),
+(35, 2, '2026-10-01', 270),
+(36, 2, '2026-11-01', 250),
+(37, 3, '2025-12-01', 90),
+(38, 3, '2026-01-01', 110),
+(39, 3, '2026-02-01', 140),
+(40, 3, '2026-03-01', 95),
+(41, 3, '2026-04-01', 130),
+(42, 3, '2026-05-01', 160),
+(43, 3, '2026-06-01', 100),
+(44, 3, '2026-07-01', 85),
+(45, 3, '2026-08-01', 125),
+(46, 3, '2026-09-01', 150),
+(47, 3, '2026-10-01', 105),
+(48, 3, '2026-11-01', 120),
+(49, 5, '2025-12-01', 1300),
+(50, 5, '2026-01-01', 1450),
+(51, 5, '2026-02-01', 1620),
+(52, 5, '2026-03-01', 1750),
+(53, 5, '2026-04-01', 1380),
+(54, 5, '2026-05-01', 1250),
+(55, 5, '2026-06-01', 1580),
+(56, 5, '2026-07-01', 1700),
+(57, 5, '2026-08-01', 1420),
+(58, 5, '2026-09-01', 1310),
+(59, 5, '2026-10-01', 1640),
+(60, 5, '2026-11-01', 1500);
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura para tabela `funcionario`
 --
 
@@ -148,9 +231,9 @@ CREATE TABLE `funcionario` (
 --
 
 INSERT INTO `funcionario` (`id_funcionario`, `id_cargo`, `id_setor`, `telefone_funcionario`, `cpf_funcionario`, `email_funcionario`, `nome_funcionario`, `senha_funcionario`, `ativo_funcionario`) VALUES
-(1, 3, 1, '41977770001', '33333333331', 'funcionario@kdz.com', 'Funcionario Teste', '$2b$12$vW0GYTuYyffBe8UYa.ixQOEISkO7qAGqoZ/J4hiiRCAQebJkwjvHi', 1),
-(2, 2, 2, '41977770002', '33333333332', 'gerente.func@kdz.com', 'Gerente Teste (func)', '$2b$12$vW0GYTuYyffBe8UYa.ixQOEISkO7qAGqoZ/J4hiiRCAQebJkwjvHi', 1),
-(3, 1, 2, '41977770003', '33333333333', 'admin.func@kdz.com', 'Admin Teste (func)', '$2b$12$vW0GYTuYyffBe8UYa.ixQOEISkO7qAGqoZ/J4hiiRCAQebJkwjvHi', 1);
+(1, 3, 1, '41992178378', '97344287307', 'anaju@kdz.com', 'Ana Julia', '$2y$12$5bTInyE.jT6P5TZZl0N89OrrzsLeM2x6rTjCYAgkP17gDEYbULIhW', 1),
+(2, 3, 2, '41991287298', '89034078140', 'julio@kdz.com', 'Julio', '$2y$12$t5BEUJSJIOEmpMby4m.JReh/AfgKnIoekZgvnAZiA98OU9rVOiVCC', 1),
+(3, 3, 1, '41912932913', '17215418103', 'dudu@kdz.com', 'Carlos Eduardo', '$2y$12$A7ZAtW.Sd1WuxSHdGHmrLulOsZtvwFHFmfMXSMMTDHPeqEzjNYgCa', 1);
 
 -- --------------------------------------------------------
 
@@ -225,6 +308,7 @@ CREATE TABLE `gerencia_gerente_produto` (
 
 CREATE TABLE `gerente` (
   `id_gerente` int(11) NOT NULL,
+  `id_setor` int(11) NOT NULL,
   `nome_gerente` varchar(100) NOT NULL,
   `email_gerente` varchar(100) NOT NULL,
   `cpf_gerente` varchar(12) NOT NULL,
@@ -237,9 +321,10 @@ CREATE TABLE `gerente` (
 -- Despejando dados para a tabela `gerente`
 --
 
-INSERT INTO `gerente` (`id_gerente`, `nome_gerente`, `email_gerente`, `cpf_gerente`, `telefone_gerente`, `senha_gerente`, `ativo_gerente`) VALUES
-(1, 'Gerente Teste', 'gerente@kdz.com', '22222222221', '41988880001', '$2b$12$fEiAJXIlTREvjCnTkRQ9uulBDfMXsG1DJcfv8jq2Za1U/KlJKB3ZG', 1),
-(2, 'Gerente Teste 2', 'gerente2@kdz.com', '22222222222', '41988880002', '$2b$12$fEiAJXIlTREvjCnTkRQ9uulBDfMXsG1DJcfv8jq2Za1U/KlJKB3ZG', 1);
+INSERT INTO `gerente` (`id_gerente`, `id_setor`, `nome_gerente`, `email_gerente`, `cpf_gerente`, `telefone_gerente`, `senha_gerente`, `ativo_gerente`) VALUES
+(3, 1, 'Pedro André', 'pedroandre@kdz.com', '89769103896', '41991783213', '$2y$12$xBoe25f8LRpKh96QfssCCON0XKC9Tgs.NU37y6hzMP8ZYdg5uKNGq', 1),
+(4, 1, 'Lucas Brasil', 'brasil@kdz.com', '69714355834', '41999843272', '$2y$12$ANRcrUxGnV/gBjXg1nhoXO5E/CGfSoBzdMmLbEpRX3dMcbr/vlwQS', 1),
+(5, 2, 'Cesar Stati', 'stati@kdz.com', '09836730982', '4113783219', '$2y$12$XY/0g0RnBxQSoUDvSPMEoOIRT.UNPKs5h7M.BFzaS0br3cwe/RL4G', 1);
 
 -- --------------------------------------------------------
 
@@ -399,6 +484,13 @@ ALTER TABLE `chama_gerente_ords`
   ADD KEY `id_ords` (`id_ords`);
 
 --
+-- Índices de tabela `estoque_mensal`
+--
+ALTER TABLE `estoque_mensal`
+  ADD PRIMARY KEY (`id_estoque_mensal`),
+  ADD KEY `id_produto` (`id_produto`);
+
+--
 -- Índices de tabela `funcionario`
 --
 ALTER TABLE `funcionario`
@@ -450,7 +542,8 @@ ALTER TABLE `gerencia_gerente_produto`
 -- Índices de tabela `gerente`
 --
 ALTER TABLE `gerente`
-  ADD PRIMARY KEY (`id_gerente`);
+  ADD PRIMARY KEY (`id_gerente`),
+  ADD KEY `idSetor` (`id_setor`);
 
 --
 -- Índices de tabela `manutencao`
@@ -500,7 +593,7 @@ ALTER TABLE `setor`
 -- AUTO_INCREMENT de tabela `administrador`
 --
 ALTER TABLE `administrador`
-  MODIFY `id_administrador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_administrador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de tabela `chama_administrador_ords`
@@ -519,6 +612,12 @@ ALTER TABLE `chama_funcionario_ords`
 --
 ALTER TABLE `chama_gerente_ords`
   MODIFY `id_chama_gerente_ords` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `estoque_mensal`
+--
+ALTER TABLE `estoque_mensal`
+  MODIFY `id_estoque_mensal` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 
 --
 -- AUTO_INCREMENT de tabela `gerencia_administrador_funcionario`
@@ -588,6 +687,12 @@ ALTER TABLE `chama_gerente_ords`
   ADD CONSTRAINT `chama_gerente_ords_ibfk_2` FOREIGN KEY (`id_ords`) REFERENCES `ordem_de_serviço` (`id_ords`);
 
 --
+-- Restrições para tabelas `estoque_mensal`
+--
+ALTER TABLE `estoque_mensal`
+  ADD CONSTRAINT `estoque_mensal_ibfk_1` FOREIGN KEY (`id_produto`) REFERENCES `produto` (`id_produto`);
+
+--
 -- Restrições para tabelas `funcionario`
 --
 ALTER TABLE `funcionario`
@@ -637,6 +742,12 @@ ALTER TABLE `gerencia_gerente_funcionario`
 ALTER TABLE `gerencia_gerente_produto`
   ADD CONSTRAINT `gerencia_gerente_produto_ibfk_1` FOREIGN KEY (`id_produto`) REFERENCES `produto` (`id_produto`),
   ADD CONSTRAINT `gerencia_gerente_produto_ibfk_2` FOREIGN KEY (`id_gerente`) REFERENCES `gerente` (`id_gerente`);
+
+--
+-- Restrições para tabelas `gerente`
+--
+ALTER TABLE `gerente`
+  ADD CONSTRAINT `gerente_ibfk_1` FOREIGN KEY (`id_setor`) REFERENCES `setor` (`id_setor`);
 
 --
 -- Restrições para tabelas `ordem_de_serviço`

@@ -377,7 +377,8 @@ $menu = [ //array do menu (igual ao do index.php)
     </div>
 </div>
 
-<!--Modal de histórico do produto (js/historico_produto.js)-->
+<!--Modal de histórico do produto (js/historico_produto.js)
+    Substitui o modal-historico que já existe no produtos.php: mesmos ids, com a seção do gráfico nova.-->
 <div class="modal" id="modal-historico" role="dialog" aria-modal="true" aria-labelledby="historico-titulo" hidden>
     <div class="modal-card largo">
         <div class="modal-head">
@@ -398,6 +399,11 @@ $menu = [ //array do menu (igual ao do index.php)
                 </div>
 
                 <dl class="detalhes-grid" id="historico-grid"></dl>
+
+                <section class="detalhes-secao">
+                    <h3>Estoque por mês</h3>
+                    <div class="historico-grafico" id="historico-grafico"></div>
+                </section>
 
                 <section class="detalhes-secao">
                     <h3>Responsáveis</h3>
@@ -458,6 +464,7 @@ $menu = [ //array do menu (igual ao do index.php)
     </div>
 </div>
 
+<script src="https://www.gstatic.com/charts/loader.js"></script>
 <script src="js/menu.js"></script>
 <script src="js/inativar.js"></script>
 <script src="js/conta.js"></script>
@@ -465,5 +472,6 @@ $menu = [ //array do menu (igual ao do index.php)
 <script src="js/novo_produto.js"></script>
 <script src="js/editar_produto.js"></script>
 <script src="js/historico_produto.js"></script>
+
 </body>
 </html>
