@@ -186,9 +186,9 @@ $menu = [ //array do menu (igual ao do index.php)
                                     <img src="img/editar.svg" alt="editar" class="edit">
                                 </button>
 
-                                <button type="button" class="btn-detalhes" aria-label="Detalhes" title="Detalhes"
-                                    data-id="<?= (int) $p['id'] ?>">
-                                    <img src="img/listar.svg" alt="detalhes" class="listar">
+                                <button type="button" class="btn-detalhes-produto" 
+                                    data-id="<?= (int) $p['id'] ?>" aria-label="Detalhes" title="Detalhes">
+                                        <img src="img/listar.svg" alt="detalhes" class="listar">
                                 </button>
 
                                 <button type="button" class="btn-historico" aria-label="Histórico" title="Histórico"
@@ -418,6 +418,41 @@ $menu = [ //array do menu (igual ao do index.php)
     </div>
 </div>
 
+<!--Modal de detalhes do produto (detalhes_produto.js / detalhes_produto.php)-->
+<div class="modal" id="modal-detalhes-produto" role="dialog" aria-modal="true" aria-labelledby="prod-detalhes-titulo" hidden>
+    <div class="modal-card largo">
+        <div class="modal-head">
+            <h2 id="prod-detalhes-titulo">Detalhes do Produto</h2>
+            <button type="button" class="modal-close" data-fechar aria-label="Fechar">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <input type="hidden" id="prod-detalhes-csrf" value="<?= htmlspecialchars($csrf) ?>">
+
+            <p class="detalhes-carregando" id="prod-detalhes-carregando" hidden>Carregando...</p>
+            <p class="modal-erro" id="prod-detalhes-erro" role="alert" hidden></p>
+
+            <div id="prod-detalhes-conteudo" class="detalhes-conteudo" hidden>
+                <div class="detalhes-topo">
+                    <h3 class="detalhes-nome" id="prod-detalhes-nome"></h3>
+                    <span id="prod-detalhes-status" class="badge"></span>
+                </div>
+
+                <dl class="detalhes-grid" id="prod-detalhes-grid"></dl>
+
+                <section class="detalhes-secao">
+                    <h3>Responsáveis</h3>
+                    <ul class="detalhes-lista" id="prod-detalhes-resp"></ul>
+                </section>
+            </div>
+        </div>
+
+        <div class="modal-foot">
+            <button type="button" class="btn-secondary" data-fechar>Fechar</button>
+        </div>
+    </div>
+</div>
+
 <!--Modal de novo registro (cadastro de produto) - js/novo_produto.js-->
 <div class="modal" id="modal-novo" role="dialog" aria-modal="true" aria-labelledby="novo-titulo" hidden>
     <div class="modal-card medio">
@@ -472,6 +507,7 @@ $menu = [ //array do menu (igual ao do index.php)
 <script src="js/novo_produto.js"></script>
 <script src="js/editar_produto.js"></script>
 <script src="js/historico_produto.js"></script>
+<script src="js/detalhes_produto.js"></script>
 
 </body>
 </html>

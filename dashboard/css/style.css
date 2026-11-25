@@ -512,6 +512,8 @@ body.modal-aberto {
     font-size: 28px;
 }
 
+.detalhes-vazio-texto { margin: 0; padding: 40px 0; text-align: center; color: #5a5a5a; }
+
 .badge {
     flex: 0 0 auto;
     padding: 4px 16px;
