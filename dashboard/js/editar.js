@@ -68,14 +68,18 @@
         form.elements.telefone.value = formatarTelefone(d.telefone || '');
 
         // Administrador não tem cargo/setor editáveis
+         // Setor: só administrador e gerente logados podem mexer.
+        // O registro editado precisa ser funcionário ou gerente (administrador é sempre "Geral").
+        const podeSetor     = modal.dataset.podeSetor === '1';
         const ehFuncionario = d.tipo === 'funcionario';
+        const temSetor      = podeSetor && (ehFuncionario || d.tipo === 'gerente');
+
         modal.querySelectorAll('.campo-funcionario').forEach(el => { el.hidden = !ehFuncionario; });
+        modal.querySelectorAll('.campo-setor').forEach(el => { el.hidden = !temSetor; });
         form.elements.id_cargo.disabled = !ehFuncionario;
-        form.elements.id_setor.disabled = !ehFuncionario;
-        if (ehFuncionario) {
-            form.elements.id_cargo.value = d.cargo;
-            form.elements.id_setor.value = d.setor;
-        }
+        form.elements.id_setor.disabled = !temSetor;
+        if (ehFuncionario) form.elements.id_cargo.value = d.cargo;
+        if (temSetor)      form.elements.id_setor.value = d.setor;
 
         modal.hidden = false;
         document.body.classList.add('modal-aberto');

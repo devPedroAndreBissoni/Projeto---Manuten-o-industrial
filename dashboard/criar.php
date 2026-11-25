@@ -50,6 +50,10 @@ $tokenEnviado = $_POST['csrf_token'] ?? '';
 if ($tokenSessao === '' || !hash_equals($tokenSessao, $tokenEnviado)) {
     responder(false, 'Sessão expirada. Recarregue a página e tente novamente.', [], 403);
 }
+$tipoLogado = $_SESSION['usuario_tipo'] ?? '';
+if (!in_array($tipoLogado, ['administrador', 'gerente'], true)) {
+    responder(false, 'Você não tem permissão para cadastrar.', [], 403);
+}
 
 /* 3) Leitura dos campos (a senha NÃO leva trim: espaços fazem parte dela) */
 $nome      = trim($_POST['nome'] ?? '');
@@ -106,8 +110,8 @@ try {
         responder(false, 'Cargo inexistente ou inativo.', ['campo' => 'id_cargo'], 422);
     }
 
-    /* Setor só existe na tabela funcionario */
-    if ($tipo === 'funcionario') {
+    /* Setor agora existe em funcionario E em gerente (administrador é sempre "Geral") */
+    if ($tipo === 'funcionario' || $tipo === 'gerente') {
         if (!$idSetor) {
             responder(false, 'Selecione o setor.', ['campo' => 'id_setor'], 422);
         }
@@ -164,22 +168,22 @@ try {
             $novoId = (int) $pdo->lastInsertId();
             break;
 
-        case 'gerente':
-            /* gerente NÃO tem AUTO_INCREMENT nem cargo/setor: id calculado com trava */
-            $novoId = (int) $pdo->query(
-                "SELECT COALESCE(MAX(id_gerente), 0) + 1 FROM gerente FOR UPDATE"
-            )->fetchColumn();
-            $ins = $pdo->prepare(
-                "INSERT INTO gerente
-                    (id_gerente, nome_gerente, email_gerente, cpf_gerente,
-                     telefone_gerente, senha_gerente, ativo_gerente)
-                 VALUES (:id, :nome, :email, :cpf, :tel, :senha, 1)"
-            );
-            $ins->execute([
-                ':id' => $novoId, ':nome' => $nome, ':email' => $email,
-                ':cpf' => $cpf, ':tel' => $telefone, ':senha' => $hash,
-            ]);
-            break;
+            case 'gerente':
+                /* gerente NÃO tem AUTO_INCREMENT: id calculado com trava. Agora tem id_setor */
+                $novoId = (int) $pdo->query(
+                    "SELECT COALESCE(MAX(id_gerente), 0) + 1 FROM gerente FOR UPDATE"
+                )->fetchColumn();
+                $ins = $pdo->prepare(
+                    "INSERT INTO gerente
+                        (id_gerente, id_setor, nome_gerente, email_gerente, cpf_gerente,
+                         telefone_gerente, senha_gerente, ativo_gerente)
+                     VALUES (:id, :setor, :nome, :email, :cpf, :tel, :senha, 1)"
+                );
+                $ins->execute([
+                    ':id' => $novoId, ':setor' => $idSetor, ':nome' => $nome, ':email' => $email,
+                    ':cpf' => $cpf, ':tel' => $telefone, ':senha' => $hash,
+                ]);
+                break;
 
         default: /* funcionario: sem AUTO_INCREMENT, id calculado com trava */
             $novoId = (int) $pdo->query(
