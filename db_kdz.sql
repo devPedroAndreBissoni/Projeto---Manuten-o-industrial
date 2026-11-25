@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 25/11/2026 às 12:32
+-- Tempo de geração: 25/11/2026 às 12:46
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -158,7 +158,7 @@ INSERT INTO `estoque_mensal` (`id_estoque_mensal`, `id_produto`, `mes`, `quantid
 (9, 4, '2026-08-01', 1120),
 (10, 4, '2026-09-01', 870),
 (11, 4, '2026-10-01', 730),
-(12, 4, '2026-11-01', 800),
+(12, 4, '2026-11-01', 900),
 (13, 1, '2025-12-01', 420),
 (14, 1, '2026-01-01', 480),
 (15, 1, '2026-02-01', 530),
@@ -402,8 +402,37 @@ INSERT INTO `produto` (`id_produto`, `id_categoria`, `nome_produto`, `estoque_pr
 (1, 1, 'Granulado de Polipropileno 25kg', 500, '2026-10-01', 1),
 (2, 1, 'Chapa de Aço 2mm', 250, '2026-10-05', 1),
 (3, 2, 'Correia Dentada CD-45', 120, '2026-10-10', 1),
-(4, 3, 'Caixa Plástica 20L', 800, '2026-10-15', 1),
+(4, 1, 'Caixa Plástica 20L', 900, '2026-11-25', 1),
 (5, 3, 'Tampa Plástica Universal', 1500, '2026-10-20', 1);
+
+--
+-- Acionadores `produto`
+--
+DELIMITER $$
+CREATE TRIGGER `trg_produto_estoque_ai` AFTER INSERT ON `produto` FOR EACH ROW BEGIN
+  INSERT INTO `estoque_mensal` (`id_produto`, `mes`, `quantidade`)
+  VALUES (NEW.`id_produto`, DATE_FORMAT(CURDATE(), '%Y-%m-01'), NEW.`estoque_produto`);
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `trg_produto_estoque_au` AFTER UPDATE ON `produto` FOR EACH ROW BEGIN
+  IF NEW.`estoque_produto` <> OLD.`estoque_produto` THEN
+    IF EXISTS (SELECT 1 FROM `estoque_mensal`
+                WHERE `id_produto` = NEW.`id_produto`
+                  AND `mes` = DATE_FORMAT(CURDATE(), '%Y-%m-01')) THEN
+      UPDATE `estoque_mensal`
+         SET `quantidade` = NEW.`estoque_produto`
+       WHERE `id_produto` = NEW.`id_produto`
+         AND `mes` = DATE_FORMAT(CURDATE(), '%Y-%m-01');
+    ELSE
+      INSERT INTO `estoque_mensal` (`id_produto`, `mes`, `quantidade`)
+      VALUES (NEW.`id_produto`, DATE_FORMAT(CURDATE(), '%Y-%m-01'), NEW.`estoque_produto`);
+    END IF;
+  END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 

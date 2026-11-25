@@ -30,8 +30,8 @@ const MESES_ABREV = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'se
 /*
  * Estoque do produto em cada mês, no formato ['2026-11' => 800, '2026-10' => 750, ...].
  * Lê a tabela estoque_mensal (veja estoque_mensal.sql). Se a tabela ainda não existir
- * ou não tiver nada para o produto, cai para o único dado confiável que o banco tem:
- * o estoque de hoje, colocado no mês atual.
+ * ou não tiver nada para o produto, só o mês atual aparece. O mês atual sempre usa o
+ * estoque de hoje, para o gráfico nunca divergir do que a lista de produtos mostra.
  */
 function estoquePorMes(PDO $pdo, int $idProduto, int $estoqueAtual, DateTimeImmutable $agora): array
 {
@@ -55,10 +55,9 @@ function estoquePorMes(PDO $pdo, int $idProduto, int $estoqueAtual, DateTimeImmu
         error_log('Erro ao ler estoque_mensal: ' . $e->getMessage());
     }
 
-    // o mês atual sempre existe: se a tabela não tem, vale o estoque de hoje
-    if (!isset($porMes[$mesAtual])) {
-        $porMes[$mesAtual] = $estoqueAtual;
-    }
+    // o mês atual SEMPRE vale o estoque de hoje (produto.estoque_produto), mesmo que a
+    // linha desse mês em estoque_mensal esteja desatualizada (ex.: o produto foi editado)
+    $porMes[$mesAtual] = $estoqueAtual;
 
     return $porMes;
 }
