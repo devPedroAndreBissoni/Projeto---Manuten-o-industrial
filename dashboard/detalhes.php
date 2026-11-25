@@ -78,17 +78,20 @@ try {
         $responsaveis = $r->fetchAll();
     } elseif ($tipo === 'gerente') {
         $q = $pdo->prepare(
-            "SELECT id_gerente        AS id,
-                    nome_gerente      AS nome,
-                    cpf_gerente       AS cpf,
-                    email_gerente     AS email,
-                    telefone_gerente  AS telefone,
-                    ativo_gerente     AS ativo,
-                    'Gerente'         AS cargo,
-                    'Geral'           AS setor
-               FROM gerente
-              WHERE id_gerente = :id"
+            "SELECT g.id_gerente        AS id,
+                    g.nome_gerente      AS nome,
+                    g.cpf_gerente       AS cpf,
+                    g.email_gerente     AS email,
+                    g.telefone_gerente  AS telefone,
+                    g.ativo_gerente     AS ativo,
+                    'Gerente'           AS cargo,
+                    s.nome_setor        AS setor
+               FROM gerente g
+         INNER JOIN setor s ON s.id_setor = g.id_setor
+              WHERE g.id_gerente = :id"
         );
+        $q->execute([':id' => $id]);
+        $dados = $q->fetch();
         $q->execute([':id' => $id]);
         $dados = $q->fetch();
     } else {

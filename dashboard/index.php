@@ -21,6 +21,8 @@ $csrf = $_SESSION['csrf_token'];
 require_once __DIR__ . '/resolver_usuario.php';
 resolverUsuarioSessao($pdo); // garante usuario_id/usuario_tipo na sessão
 
+
+
 $tabelasUsuario = [
     'funcionario'   => ['funcionario',   'nome_funcionario',   'id_funcionario'],
     'administrador' => ['administrador', 'nome_administrador', 'id_administrador'],
@@ -34,6 +36,8 @@ if (isset($tabelasUsuario[$tipoUsuario])) {
     $stU->execute([':id' => (int) ($_SESSION['usuario_id'] ?? 0)]);
     $nomeUsuario = $stU->fetchColumn() ?: $nomeUsuario;
 }
+
+$podeEditarSetor = in_array($tipoUsuario, ['administrador', 'gerente'], true);
 
 /* Agora a consulta também traz o id, o tipo (funcionario/administrador) e os dados
    necessários para preencher o modal de edição. Como são tabelas diferentes, o "tipo"
@@ -63,12 +67,13 @@ $sql = "SELECT f.id_funcionario       AS id,
         WHERE a.ativo_administrador = 1
           AND NOT (:tipo_a = 'administrador' AND a.id_administrador = :id_a) /*não mostra quem está logado*/
 
-        UNION ALL /*gerentes ficam na própria tabela, por isso precisam do seu SELECT*/
+        UNION ALL /*gerentes agora têm setor próprio (coluna id_setor na tabela gerente)*/
 
         SELECT g.id_gerente, 'gerente', g.nome_gerente,
                g.email_gerente, g.telefone_gerente,
-               NULL, NULL, 'Gerente', 'Geral', 'gerente'
+               NULL, g.id_setor, 'Gerente', s2.nome_setor, 'gerente'
         FROM gerente g
+        INNER JOIN setor s2 ON s2.id_setor = g.id_setor
         WHERE g.ativo_gerente = 1
           AND NOT (:tipo_g = 'gerente' AND g.id_gerente = :id_g) /*não mostra quem está logado*/
 
@@ -190,7 +195,7 @@ $menu = [ //array do menu //aqui
                         <input type="text" id="filtro-nome" placeholder="Buscar por Nome..." autocomplete="off" aria-label="Buscar por nome">
                 </label>
 
-                <label class="field"> Setor:
+                <label class="field campo-setor"> Setor:
                 <select name="setor" id="filtro-setor"> <!--aqui eu puxei o setor que eu chamei lá em cima para vincular ao banco para ter opções que realmente existam no banco de dados-->
                 <option value="">Todos</option>
                 <?php foreach ($setores as $s): ?>
@@ -316,6 +321,8 @@ $menu = [ //array do menu //aqui
     </div>
 </div>
 
+<!--Modal de detalhes-->
+<!--Modal de edição-->
 <!--Modal de detalhes-->
 <div class="modal" id="modal-detalhes" role="dialog" aria-modal="true" aria-labelledby="detalhes-titulo" hidden>
     <div class="modal-card largo">
