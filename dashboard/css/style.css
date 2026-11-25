@@ -754,3 +754,11 @@ main {
     color: var(--preto);
     font-size: 18px;
 }
+
+.detalhes-grafico { 
+    width: 100%; height: 280px; 
+}
+
+.hm-grafico { 
+    width: 100%; height: 320px; 
+}

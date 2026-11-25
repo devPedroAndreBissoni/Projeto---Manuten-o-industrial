@@ -139,6 +139,7 @@
             }
             montar(res);
             estado('ok');
+            if (window.desenharGraficoMaquina) desenharGraficoMaquina(res.grafico || []);
         } catch (e) {
             if (meuPedido !== pedido) return;
             estado('erro', 'Não foi possível se conectar ao servidor. Tente novamente.');
