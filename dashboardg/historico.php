@@ -128,14 +128,10 @@ $menu = [ //array do menu (igual ao do index.php)
         "arquivo" => 'index.php',
         "icone" => "img/pessoas.svg"
     ],
-    [
-        "nome" => 'Produtos',
-        "arquivo" => 'produtos.php',
-        "icone" => "img/caixa.svg"
-    ],
+
     [
         "nome" => 'Máq. e Equip.',
-        "arquivo" => '../dashboardg/maquinas.php',
+        "arquivo" => '../dashboardf/maquinas.php',
         "icone" => "img/maquinas.svg"
     ],
     [

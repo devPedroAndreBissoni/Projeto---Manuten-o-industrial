@@ -124,19 +124,14 @@ $paginaAtual = basename($_SERVER['SCRIPT_NAME']); // para marcar o item ativo do
 
 $menu = [ //array do menu (igual ao do index.php)
     [
-        "nome" => 'Funcionários',
-        "arquivo" => 'index.php',
-        "icone" => "img/pessoas.svg"
+        "nome" => 'Máq. e Equip.',
+        "arquivo" => '../dashboardf/maquinas.php',
+        "icone" => "img/maquinas.svg"
     ],
     [
         "nome" => 'Produtos',
         "arquivo" => 'produtos.php',
         "icone" => "img/caixa.svg"
-    ],
-    [
-        "nome" => 'Máq. e Equip.',
-        "arquivo" => '../dashboardf/maquinas.php',
-        "icone" => "img/maquinas.svg"
     ],
     [
         "nome" => 'Ordens de Serviço',
@@ -255,21 +250,6 @@ $menu = [ //array do menu (igual ao do index.php)
                             </td>
                             <td class="actions">
                                 <!--Os botões abaixo são os mesmos do index.php. Os data-* levam os dados da linha para o modal-->
-                                <button type="button" class="btn-editar" aria-label="Editar" title="Editar"
-                                    data-id="<?= (int) $f['id'] ?>"
-                                    data-tipo="<?= htmlspecialchars($f['tipo']) ?>"
-                                    data-nome="<?= htmlspecialchars($f['nome']) ?>"
-                                    data-email="<?= htmlspecialchars($f['email'] ?? '') ?>"
-                                    data-telefone="<?= htmlspecialchars($f['telefone'] ?? '') ?>"
-                                    data-cargo="<?= htmlspecialchars((string) ($f['id_cargo'] ?? '')) ?>"
-                                    data-setor="<?= htmlspecialchars((string) ($f['id_setor'] ?? '')) ?>"
-                                    data-modelo="<?= htmlspecialchars($f['tipo'] === 'maquina' ? (string) $f['descricao'] : '') ?>"
-                                    data-funcionamento="<?= htmlspecialchars((string) ($f['funcionamento'] ?? '')) ?>"
-                                    data-categoria="<?= htmlspecialchars((string) ($f['id_categoria'] ?? '')) ?>"
-                                    data-estoque="<?= htmlspecialchars((string) ($f['estoque'] ?? '')) ?>"
-                                    data-producao="<?= htmlspecialchars((string) ($f['producao'] ?? '')) ?>">
-                                    <img src="img/editar.svg" alt="editar" class="edit">
-                                </button>
 
                                 <!--Abre o modal com todas as informações do registro (dados buscados em detalhes.php)-->
                                 <button type="button" class="btn-detalhes" aria-label="Detalhes" title = "Detalhes"
@@ -279,21 +259,7 @@ $menu = [ //array do menu (igual ao do index.php)
                                 </button>
 
                                 <?php if ($estaAtivo): ?>
-                                <!--Inativar = exclusão lógica (ativo = 0). Os dados continuam no banco-->
-                                <button type="button" class="btn-inativar" aria-label="Inativar" title = "Inativar"
-                                    data-id="<?= (int) $f['id'] ?>"
-                                    data-tipo="<?= htmlspecialchars($f['tipo']) ?>"
-                                    data-nome="<?= htmlspecialchars($f['nome']) ?>">
-                                    <img src="img/lixo.svg" alt="desativar" class="inativar">
-                                </button>
                                 <?php else: ?>
-                                <!--Ativar = desfaz a inativação (ativo = 1). Só aparece para registros inativos-->
-                                <button type="button" class="btn-ativar" aria-label="Ativar" title = "Ativar"
-                                    data-id="<?= (int) $f['id'] ?>"
-                                    data-tipo="<?= htmlspecialchars($f['tipo']) ?>"
-                                    data-nome="<?= htmlspecialchars($f['nome']) ?>">
-                                    <img src="img/ativar.svg" alt="ativar" class="ativar">
-                                </button>
                                 <?php endif; ?>
                             </td>
                         </tr>

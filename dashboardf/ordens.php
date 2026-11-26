@@ -70,19 +70,14 @@ $paginaAtual = basename($_SERVER['SCRIPT_NAME']); // para marcar o item ativo do
 
 $menu = [ //array do menu (igual ao do index.php)
     [
-        "nome" => 'Funcionários',
-        "arquivo" => 'index.php',
-        "icone" => "img/pessoas.svg"
+    "nome" => 'Máq. e Equip.',
+    "arquivo" => '../dashboardf/maquinas.php',
+    "icone" => "img/maquinas.svg"
     ],
     [
         "nome" => 'Produtos',
         "arquivo" => 'produtos.php',
         "icone" => "img/caixa.svg"
-    ],
-    [
-        "nome" => 'Máq. e Equip.',
-        "arquivo" => '../dashboardf/maquinas.php',
-        "icone" => "img/maquinas.svg"
     ],
     [
         "nome" => 'Ordens de Serviço',

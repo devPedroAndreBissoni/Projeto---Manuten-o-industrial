@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Cargo => página de destino
     $destinos = [
-        "funcionario"   => "../dashboardf/index.php",
+        "funcionario"   => "../dashboardf/maquinas.php",
         "gerente"       => "../dashboardg/index.php",
         "administrador" => "../dashboard/index.php"
     ];

@@ -1,5 +1,6 @@
-<?php
 
+<?php
+require_once 'validador.php';
 require_once 'conexao.php';
 
 if (session_status() === PHP_SESSION_NONE) {
