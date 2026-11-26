@@ -50,7 +50,7 @@
             return;
         }
         if (!linhas || !linhas.some(l => l.mtbf !== null)) {
-            mensagemGrafico('Sem falhas registradas nos últimos meses.');
+            mensagemGrafico('Sem dados de falhas e funcionamento nos últimos meses.');
             return;
         }
         if (!chartsPronto) return; // o callback acima desenha quando terminar de carregar
