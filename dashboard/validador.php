@@ -1,19 +1,20 @@
 <?php
 /*
- * documento.php
- * GUARDA DE ACESSO: só deixa a página (ou ação) continuar se a pessoa entrou pelo LOGIN.
- * Quem cola o link direto, sem ter feito login, é barrado.
+ * validador.php
+ * GUARDA DE ACESSO: só deixa a página (ou ação) continuar se a pessoa entrou pelo LOGIN
+ * e se o CARGO DELA NO BANCO é o da pasta. Quem cola o link direto é barrado.
  *
- * Como usar: é a PRIMEIRA linha de cada página e de cada arquivo de ação (já feito):
- *     require_once 'documento.php';
+ * Como usar: é a PRIMEIRA linha de cada página e de cada arquivo de ação:
+ *     require_once 'validador.php';
  * O mesmo arquivo serve para dashboard, dashboardg e dashboardf, sem editar nada:
- * ele descobre o perfil exigido pelo NOME DA PASTA onde está.
+ * o perfil exigido vem do NOME DA PASTA onde ele está.
  *
- * O que ele confere, nesta ordem:
- *   1) Existe sessão de login (conectar.php grava usuario_id, usuario_tipo e cargo)?
- *   2) O perfil da sessão é o desta pasta? (um gerente não abre o link do administrador)
- *   3) A conta ainda existe e está ativa no banco? (se foi inativada com a pessoa logada, perde o acesso)
- * Falhou em qualquer um: página -> volta para a tela de login; ação (fetch/JSON) -> responde 401/403 em JSON.
+ * O que confere, a cada acesso:
+ *   1) Existe sessão de login (conectar.php grava usuario_id e usuario_tipo)?
+ *   2) A conta existe e está ativa no banco?
+ *   3) O cargo ATUAL da pessoa no banco é o desta pasta? (não confia no cargo guardado na sessão:
+ *      se o cargo foi alterado depois do login, vale o do banco)
+ * Falhou: página -> redireciona; ação (fetch/JSON) -> responde 401/403 em JSON.
  */
 
 require_once 'conexao.php'; // fornece $pdo
@@ -26,31 +27,34 @@ if (session_status() === PHP_SESSION_NONE) {
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Pragma: no-cache');
 
-function documento_validar(PDO $pdo): void
+function validador_executar(PDO $pdo): void
 {
     /* Caminho da tela de login a partir desta pasta (o mesmo do sair.php) */
     $urlLogin = '../tela_login/index.php';
 
-    /* Pasta => perfil (cargo gravado pelo conectar.php) que pode usar aquela pasta */
+    /* Pasta => perfil que pode usar aquela pasta (mesmos nomes do $destinos do conectar.php) */
     $perfilDaPasta = [
         'dashboard'  => 'administrador',
         'dashboardg' => 'gerente',
         'dashboardf' => 'funcionario',
     ];
-
-    /* Perfil => pasta (para mandar a pessoa de volta ao painel dela) */
     $pastaDoPerfil = array_flip($perfilDaPasta);
 
-    /* Tipo da sessão (tabela onde a pessoa foi achada no login) => tabela, coluna id, coluna ativo.
+    /* Tipo da sessão (tabela onde a pessoa foi achada no login) => consulta que devolve ativo e cargo.
        Lista FIXA: nada digitado entra no SQL. */
-    $tabelas = [
-        'funcionario'   => ['funcionario',   'id_funcionario',   'ativo_funcionario'],
-        'administrador' => ['administrador', 'id_administrador', 'ativo_administrador'],
-        'gerente'       => ['gerente',       'id_gerente',       'ativo_gerente'],
+    $consultas = [
+        'funcionario'   => "SELECT f.ativo_funcionario AS ativo, c.nome_cargo AS cargo
+                              FROM funcionario f
+                         LEFT JOIN cargo c ON c.id_cargo = f.id_cargo
+                             WHERE f.id_funcionario = :id",
+        'administrador' => "SELECT ativo_administrador AS ativo, 'administrador' AS cargo
+                              FROM administrador WHERE id_administrador = :id",
+        'gerente'       => "SELECT ativo_gerente AS ativo, 'gerente' AS cargo
+                              FROM gerente WHERE id_gerente = :id",
     ];
 
     /* Navegação normal do navegador (GET pedindo HTML) é redirecionada;
-       qualquer outra coisa (fetch, POST) recebe JSON, porque o JS não sabe seguir um redirecionamento. */
+       o resto (fetch, POST) recebe JSON, porque o JS não sabe seguir um redirecionamento. */
     $ehPagina = ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'GET'
         && stripos($_SERVER['HTTP_ACCEPT'] ?? '', 'text/html') !== false;
 
@@ -75,36 +79,44 @@ function documento_validar(PDO $pdo): void
     };
 
     /* 1) Tem login? */
-    $id    = (int) ($_SESSION['usuario_id'] ?? 0);
-    $tipo  = (string) ($_SESSION['usuario_tipo'] ?? '');
-    $cargo = (string) ($_SESSION['cargo'] ?? '');
+    $id   = (int) ($_SESSION['usuario_id'] ?? 0);
+    $tipo = (string) ($_SESSION['usuario_tipo'] ?? '');
 
-    if ($id <= 0 || !isset($tabelas[$tipo]) || $cargo === '') {
+    if ($id <= 0 || !isset($consultas[$tipo])) {
         $negar(401, 'Você precisa fazer login.', $urlLogin);
     }
 
-    /* 2) O perfil da sessão é o desta pasta? */
-    $pasta = basename(__DIR__);
-    if (isset($perfilDaPasta[$pasta]) && $cargo !== $perfilDaPasta[$pasta]) {
-        $meuPainel = isset($pastaDoPerfil[$cargo]) ? '../' . $pastaDoPerfil[$cargo] . '/index.php' : $urlLogin;
-        $negar(403, 'Você não tem permissão para acessar esta área.', $meuPainel);
-    }
-
-    /* 3) A conta ainda existe e está ativa? */
-    [$tabela, $colId, $colAtivo] = $tabelas[$tipo];
+    /* 2) A conta existe e está ativa? E qual é o cargo dela AGORA, no banco? */
     try {
-        $q = $pdo->prepare("SELECT $colAtivo FROM $tabela WHERE $colId = :id");
+        $q = $pdo->prepare($consultas[$tipo]);
         $q->execute([':id' => $id]);
-        $ativo = $q->fetchColumn();
+        $conta = $q->fetch(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        error_log('Erro no documento.php: ' . $e->getMessage());
+        error_log('Erro no validador.php: ' . $e->getMessage());
         $negar(500, 'Erro ao validar o acesso.', $urlLogin);
     }
 
-    if ($ativo === false || (int) $ativo !== 1) {
+    if (!$conta || (int) $conta['ativo'] !== 1) {
         $encerrarSessao();
         $negar(401, 'Conta não encontrada ou inativa.', $urlLogin);
     }
+
+    /* Cargo sem acento e em minúsculo (a mesma regra do conectar.php) */
+    $cargo = mb_strtolower(trim((string) ($conta['cargo'] ?? '')), 'UTF-8');
+    $cargo = strtr($cargo, [
+        'á' => 'a', 'ã' => 'a', 'â' => 'a',
+        'é' => 'e', 'ê' => 'e', 'í' => 'i',
+        'ó' => 'o', 'ô' => 'o', 'õ' => 'o',
+        'ú' => 'u', 'ç' => 'c',
+    ]);
+    $_SESSION['cargo'] = $cargo; // mantém a sessão igual ao banco
+
+    /* 3) O cargo atual é o desta pasta? Se a pasta não está na lista, é bloqueada por segurança. */
+    $pasta = basename(__DIR__);
+    if (!isset($perfilDaPasta[$pasta]) || $cargo !== $perfilDaPasta[$pasta]) {
+        $meuPainel = isset($pastaDoPerfil[$cargo]) ? '../' . $pastaDoPerfil[$cargo] . '/index.php' : $urlLogin;
+        $negar(403, 'Você não tem permissão para acessar esta área.', $meuPainel);
+    }
 }
 
-documento_validar($pdo);
+validador_executar($pdo);

@@ -1,5 +1,5 @@
 <?php
-require_once 'validador.´php';
+require_once 'validador.php';
 require_once 'conexao.php';
 require_once 'ordens_config.php';
 

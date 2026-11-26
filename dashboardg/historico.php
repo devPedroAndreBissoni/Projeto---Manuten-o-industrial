@@ -131,7 +131,7 @@ $menu = [ //array do menu (igual ao do index.php)
 
     [
         "nome" => 'Máq. e Equip.',
-        "arquivo" => '../dashboardf/maquinas.php',
+        "arquivo" => '../dashboardg/maquinas.php',
         "icone" => "img/maquinas.svg"
     ],
     [
