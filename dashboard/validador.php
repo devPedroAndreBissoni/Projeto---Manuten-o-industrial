@@ -113,10 +113,24 @@ function validador_executar(PDO $pdo): void
 
     /* 3) O cargo atual é o desta pasta? Se a pasta não está na lista, é bloqueada por segurança. */
     $pasta = basename(__DIR__);
+    $pasta = basename(__DIR__);
+
     if (!isset($perfilDaPasta[$pasta]) || $cargo !== $perfilDaPasta[$pasta]) {
-        $meuPainel = isset($pastaDoPerfil[$cargo]) ? '../' . $pastaDoPerfil[$cargo] . '/index.php' : $urlLogin;
-        $negar(403, 'Você não tem permissão para acessar esta área.', $meuPainel);
+    
+        if ($cargo === 'funcionario') {
+            $meuPainel = '../dashboardf/maquinas.php';
+    
+        } else {
+            $meuPainel = isset($pastaDoPerfil[$cargo])
+                ? '../' . $pastaDoPerfil[$cargo] . '/index.php'
+                : $urlLogin;
+        }
+    
+        $negar(
+            403,
+            'Você não tem permissão para acessar esta área.',
+            $meuPainel
+        );
     }
 }
-
 validador_executar($pdo);
