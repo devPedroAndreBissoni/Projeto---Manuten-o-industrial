@@ -146,19 +146,19 @@ $menu = [ //array do menu //aqui
             </div>
 
             <div class="topbar-right">
-                <div class="user"> <!--aqui só botei texto substituir pelo usuário do banco!!!!-->
+                <div class="user" title="usuario"> <!--aqui só botei texto substituir pelo usuário do banco!!!!-->
                     <span class="avatar"></span>
                     <span><strong><?= htmlspecialchars($nomeUsuario) ?></strong></span>
                 </div>
-                <button class="btn-login" type="button" data-action="login"> <!--Ícone do login/Usuário-->
+                <button class="btn-login" type="button" data-action="login" title="Login"> <!--Ícone do login/Usuário-->
                     <span class="icon-circle" aria-hidden="true">
                         <span class="icon-user"></span>
                     </span>
                 </button>
-                <button class="icon-btn" aria-label="Notificações">
+                <button class="icon-btn" aria-label="Notificações" title="Notificações">
                     <img src="img/sino.svg" alt="sininho">
                 </button>
-                <button type="button" class="icon-btn" id="btn-conta" aria-label="Configurações da conta">
+                <button type="button" class="icon-btn" id="btn-conta" aria-label="Configurações da conta" title="configurações">
                     <img src="img/engrenagem.svg" alt="Config">
                 </button>
             </div>
@@ -180,7 +180,7 @@ $menu = [ //array do menu //aqui
         <main class ="content">
             <div class="content-head">
                 <h1>Funcionários</h1>
-                <button type="button" class="btn-primary" id="btn-novo"> <!--Abre o modal de cadastro (criar.php)-->
+                <button type="button" class="btn-primary" id="btn-novo" title="Novo registro"> <!--Abre o modal de cadastro (criar.php)-->
                     <span class = "icon-plus">
                         <img src="img/plus.svg" alt="+" class="plus">
                     </span>
