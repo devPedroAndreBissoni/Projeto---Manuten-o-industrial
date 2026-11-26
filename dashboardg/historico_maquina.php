@@ -6,9 +6,13 @@
  *   - pessoas: todas as ordens de serviço da máquina com o responsável por cada uma
  *
  * MTBF do mês = (tempo de operação - tempo parado) / número de falhas
+ *   - falhas            = ordens de serviço abertas para a máquina no mês (recebe_maquina_ords)
+ *   - tempo de operação = horas do mês em que a máquina deveria operar (HORAS_OPERACAO_DIA)
+ *   - tempo parado      = tempo de operação - horas em que ela funcionou (funcionamento_maquina)
  */
 
 require_once 'conexao.php';
+require_once 'funcionamento_util.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -26,22 +30,7 @@ function responder(bool $ok, string $mensagem, array $extra = [], int $status = 
 /* ---------- configuração do cálculo ---------- */
 
 const MESES_NO_GRAFICO  = 12;  // quantos meses aparecem no gráfico
-const HORAS_OPERACAO_DIA = 24; // horas por dia em que a máquina deveria operar (ajuste conforme a fábrica)
 const MESES_ABREV = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
-
-/*
- * Tempo parado (em horas) da máquina dentro do período [$inicio, $fim).
- *
- * ATENÇÃO: o banco atual NÃO guarda quando a máquina parou nem quando voltou
- * (a ordem de serviço só tem a data de abertura). Por isso esta função devolve 0
- * e o MTBF sai como "tempo de operação / falhas".
- * Quando o banco novo tiver esses dados, é SÓ AQUI que se muda: faça um SELECT
- * somando (fim_da_parada - inicio_da_parada) em horas das paradas da máquina.
- */
-function tempoParadoHoras(PDO $pdo, int $idMaquina, DateTimeImmutable $inicio, DateTimeImmutable $fim): float
-{
-    return 0.0;
-}
 
 /* 1) Só aceita POST */
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -99,14 +88,19 @@ try {
             $rotulo = MESES_ABREV[(int) $inicio->format('n') - 1] . '/' . $inicio->format('y');
 
             $falhas = $falhasPorMes[$chave] ?? 0;
-            $valor  = null; // mês sem falhas: MTBF não existe (o gráfico deixa o ponto vazio)
+            $valor  = null; // mês sem falhas (ou sem dados de funcionamento): o gráfico deixa o ponto vazio
 
             if ($falhas > 0) {
                 // no mês atual, só conta o tempo que já passou
-                $fimReal  = $fim > $agora ? $agora : $fim;
-                $horasMes = ($fimReal->getTimestamp() - $inicio->getTimestamp()) / 3600 * (HORAS_OPERACAO_DIA / 24);
-                $parado   = tempoParadoHoras($pdo, $id, $inicio, $fimReal);
-                $valor    = round(max(0.0, ($horasMes - $parado) / $falhas), 1);
+                $fimReal     = $fim > $agora ? $agora : $fim;
+                $funcionando = horasFuncionando($pdo, $id, $inicio, $fimReal);
+
+                // sem registro de funcionamento no mês: não dá para calcular (fica sem ponto)
+                if ($funcionando !== null) {
+                    $operacao = ($fimReal->getTimestamp() - $inicio->getTimestamp()) / 3600 * (HORAS_OPERACAO_DIA / 24);
+                    $parado   = max(0.0, $operacao - $funcionando);
+                    $valor    = round(($operacao - $parado) / $falhas, 1);
+                }
             }
 
             $mtbf[] = ['mes' => $rotulo, 'mtbf' => $valor, 'falhas' => $falhas];

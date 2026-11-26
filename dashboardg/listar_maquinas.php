@@ -6,6 +6,7 @@
  */
 
 require_once 'conexao.php';
+require_once 'funcionamento_util.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -83,9 +84,33 @@ try {
         error_log('Erro ao buscar ordens de serviço da máquina: ' . $e->getMessage());
     }
 
+    /* 6) Dados do gráfico de pizza (Google Charts): horas funcionando x paradas nos últimos 30 dias.
+          Formato: [['Funcionando', 612.5], ['Parada', 107.5]]
+          Parada = horas em que a máquina deveria operar (HORAS_OPERACAO_DIA) - horas funcionando.
+          Sem nenhum registro em funcionamento_maquina no período, o gráfico fica vazio. */
+    $grafico = [];
+    try {
+        $agora  = new DateTimeImmutable('now');
+        $inicio = $agora->modify('-30 days');
+
+        $funcionando = horasFuncionando($pdo, $id, $inicio, $agora);
+
+        if ($funcionando !== null) {
+            $operacao    = 30 * HORAS_OPERACAO_DIA;
+            $funcionando = min($funcionando, $operacao);
+            $grafico = [
+                ['Funcionando', round($funcionando, 1)],
+                ['Parada',      round($operacao - $funcionando, 1)],
+            ];
+        }
+    } catch (PDOException $e) {
+        error_log('Erro ao montar gráfico da máquina: ' . $e->getMessage());
+    }
+
     responder(true, 'OK', [
-        'dados'  => $dados,
-        'ordens' => $ordens,
+        'dados'   => $dados,
+        'ordens'  => $ordens,
+        'grafico' => $grafico,
     ]);
 
 } catch (PDOException $e) {
