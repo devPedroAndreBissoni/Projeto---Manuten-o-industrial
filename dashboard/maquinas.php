@@ -507,8 +507,8 @@ $menu = [ //array do menu (igual ao do index.php)
 
 <?php $maquinasOrdem = $maquinas; include 'modal_ordem.php'; ?> <!--Modal de nova ordem de serviço (botão da chave)-->
 
-<script src="js/historico_maquina.js"></script>
 <script src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="js/historico_maquina.js"></script>
 <script src="js/grafico_maquina.js"></script>
 <script src="js/listar_maquinas.js"></script>
 <script src="js/editar_maquina.js"></script>

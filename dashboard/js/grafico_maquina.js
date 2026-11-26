@@ -1,11 +1,12 @@
 /*
  * grafico_maquina.js
- * Gráfico de pizza (Google Charts) dentro do modal de detalhes da máquina.
+ * Gráfico de pizza (Google Charts) dentro do modal de detalhes da máquina:
+ *    horas funcionando x paradas nos últimos 30 dias.
  *  - carrega a biblioteca uma única vez
  *  - expõe window.desenharGraficoMaquina(linhas), chamada pelo listar_maquinas.js
  *    DEPOIS que o conteúdo do modal ficou visível (o Google Charts não consegue
  *    medir/desenhar dentro de um elemento escondido)
- *  - linhas = [['Urgência', 3], ['Baixa', 1], ...]  (rótulo, número) vindas do PHP
+ *  - linhas = [['Funcionando', 612.5], ['Parada', 107.5]]  (rótulo, horas) vindas do PHP
  */
 (function () {
     const container = document.getElementById('detalhes-grafico');
@@ -33,7 +34,9 @@
         );
 
         const opcoes = {
-            title: 'Ordens de serviço por urgência',
+            title: 'Funcionamento nos últimos 30 dias (horas)',
+            colors: ['#0072B2', '#D55E00'],   // azul = funcionando, vermelhão = parada (distinguíveis no daltonismo)
+            pieSliceText: 'percentage',
             legend: { position: 'bottom' },
             chartArea: { width: '90%', height: '70%' },
             backgroundColor: 'transparent'
