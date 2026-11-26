@@ -56,19 +56,14 @@ $paginaAtual = basename($_SERVER['SCRIPT_NAME']); // para marcar o item ativo do
 
 $menu = [ //array do menu (igual ao do index.php)
     [
-        "nome" => 'Funcionários',
-        "arquivo" => 'index.php',
-        "icone" => "img/pessoas.svg"
+    "nome" => 'Máq. e Equip.',
+    "arquivo" => '../dashboardf/maquinas.php',
+    "icone" => "img/maquinas.svg"
     ],
     [
         "nome" => 'Produtos',
         "arquivo" => 'produtos.php',
         "icone" => "img/caixa.svg"
-    ],
-    [
-        "nome" => 'Máq. e Equip.',
-        "arquivo" => '../dashboardf/maquinas.php',
-        "icone" => "img/maquinas.svg"
     ],
     [
         "nome" => 'Ordens de Serviço',
@@ -135,12 +130,6 @@ $menu = [ //array do menu (igual ao do index.php)
         <main class ="content">
             <div class="content-head">
                 <h1>Produtos</h1>
-                <button type="button" class="btn-primary" id="btn-novo">
-                    <span class = "icon-plus">
-                        <img src="img/plus.svg" alt="+" class="plus">
-                    </span>
-                    <span>Novo Registro</span>
-                </button>
             </div>
 
         <!--Filtros (js/filtros-lista.js)-->
@@ -194,14 +183,6 @@ $menu = [ //array do menu (igual ao do index.php)
                                 <button type="button" class="btn-historico" aria-label="Histórico" title="Histórico"
                                     data-id="<?= (int) $p['id'] ?>">
                                     <img src="img/relogio.svg" alt="relogio" class="relogio">
-                                </button>
-
-                                <!--Inativar = exclusão lógica (ativo = 0). Os dados continuam no banco-->
-                                <button type="button" class="btn-inativar" aria-label="Inativar" title="Inativar"
-                                    data-id="<?= (int) $p['id'] ?>"
-                                    data-tipo="produto"
-                                    data-nome="<?= htmlspecialchars($p['nome']) ?>">
-                                    <img src="img/lixo.svg" alt="desativar" class="inativar">
                                 </button>
                             </td>
                         </tr>

@@ -54,20 +54,15 @@ $paginaAtual = basename($_SERVER['SCRIPT_NAME']); // para marcar o item ativo do
 
 $menu = [ //array do menu (igual ao do index.php)
     [
-        "nome" => 'Funcionários',
-        "arquivo" => 'index.php',
-        "icone" => "img/pessoas.svg"
+    "nome" => 'Máq. e Equip.',
+    "arquivo" => '../dashboardf/maquinas.php',
+    "icone" => "img/maquinas.svg"
     ],
     [
         "nome" => 'Produtos',
         "arquivo" => 'produtos.php',
         "icone" => "img/caixa.svg"
     ],    
-    [
-        "nome" => 'Máq. e Equip.',
-        "arquivo" => '../dashboardf/maquinas.php',
-        "icone" => "img/maquinas.svg"
-    ],
     [
         "nome" => 'Ordens de Serviço',
         "arquivo" => 'ordens.php',
@@ -133,12 +128,6 @@ $menu = [ //array do menu (igual ao do index.php)
         <main class ="content">
             <div class="content-head">
                 <h1>Máquinas e Equipamentos</h1>
-                <button type="button" class="btn-primary" id="btn-novo">
-                    <span class = "icon-plus">
-                        <img src="img/plus.svg" alt="+" class="plus">
-                    </span>
-                    <span>Novo Registro</span>
-                </button>
             </div>
 
         <!--Filtros (js/filtros-lista.js)-->
@@ -185,14 +174,6 @@ $menu = [ //array do menu (igual ao do index.php)
                             <td class="col-tipo"><?= htmlspecialchars($m['maquina'] ?? '-') ?></td>
                             <td class="col-status"><?= htmlspecialchars($m['funcionamento'] ?? '-') ?></td>
                             <td class="actions">
-                                <button type="button" class="btn-editar" aria-label="Editar" title="Editar"
-                                    data-id="<?= (int) $m['id'] ?>"
-                                    data-nome="<?= htmlspecialchars($m['nome']) ?>"
-                                    data-tipo="<?= htmlspecialchars((string) ($m['maquina'] ?? '')) ?>"
-                                    data-funcionamento="<?= htmlspecialchars((string) ($m['funcionamento'] ?? '')) ?>">
-                                    <img src="img/editar.svg" alt="editar" class="edit">
-                                </button>
-
                                 <button type="button" class="btn-manutencao" aria-label="Manutenção" title="Manutenção"
                                     data-id="<?= (int) $m['id'] ?>">
                                     <img src="img/chave.svg" alt="chave" class="chave">
@@ -207,14 +188,6 @@ $menu = [ //array do menu (igual ao do index.php)
                                 <button type="button" class="btn-historico" aria-label="Histórico" title="Histórico"
                                     data-id="<?= (int) $m['id'] ?>">
                                     <img src="img/relogio.svg" alt="relogio" class="relogio">
-                                </button>
-
-                                <!--Inativar = exclusão lógica (ativo = 0). Os dados continuam no banco-->
-                                <button type="button" class="btn-inativar" aria-label="Inativar" title="Inativar"
-                                    data-id="<?= (int) $m['id'] ?>"
-                                    data-tipo="maquina"
-                                    data-nome="<?= htmlspecialchars($m['nome']) ?>">
-                                    <img src="img/lixo.svg" alt="desativar" class="inativar">
                                 </button>
                             </td>
                         </tr>

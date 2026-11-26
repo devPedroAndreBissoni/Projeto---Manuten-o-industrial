@@ -59,11 +59,6 @@ $menu = [ //array do menu (igual ao do index.php)
         "icone" => "img/pessoas.svg"
     ],
     [
-        "nome" => 'Produtos',
-        "arquivo" => 'produtos.php',
-        "icone" => "img/caixa.svg"
-    ],    
-    [
         "nome" => 'Máq. e Equip.',
         "arquivo" => '../dashboardg/maquinas.php',
         "icone" => "img/maquinas.svg"
@@ -133,12 +128,6 @@ $menu = [ //array do menu (igual ao do index.php)
         <main class ="content">
             <div class="content-head">
                 <h1>Máquinas e Equipamentos</h1>
-                <button type="button" class="btn-primary" id="btn-novo">
-                    <span class = "icon-plus">
-                        <img src="img/plus.svg" alt="+" class="plus">
-                    </span>
-                    <span>Novo Registro</span>
-                </button>
             </div>
 
         <!--Filtros (js/filtros-lista.js)-->
@@ -185,14 +174,6 @@ $menu = [ //array do menu (igual ao do index.php)
                             <td class="col-tipo"><?= htmlspecialchars($m['maquina'] ?? '-') ?></td>
                             <td class="col-status"><?= htmlspecialchars($m['funcionamento'] ?? '-') ?></td>
                             <td class="actions">
-                                <button type="button" class="btn-editar" aria-label="Editar" title="Editar"
-                                    data-id="<?= (int) $m['id'] ?>"
-                                    data-nome="<?= htmlspecialchars($m['nome']) ?>"
-                                    data-tipo="<?= htmlspecialchars((string) ($m['maquina'] ?? '')) ?>"
-                                    data-funcionamento="<?= htmlspecialchars((string) ($m['funcionamento'] ?? '')) ?>">
-                                    <img src="img/editar.svg" alt="editar" class="edit">
-                                </button>
-
                                 <button type="button" class="btn-manutencao" aria-label="Manutenção" title="Manutenção"
                                     data-id="<?= (int) $m['id'] ?>">
                                     <img src="img/chave.svg" alt="chave" class="chave">

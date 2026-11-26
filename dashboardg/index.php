@@ -104,11 +104,6 @@ $menu = [ //array do menu //aqui
         "icone" => "img/pessoas.svg"       
     ],
     [
-        "nome" => 'Produtos',
-        "arquivo" => 'produtos.php',
-        "icone" => "img/caixa.svg"
-    ],
-    [
         "nome" => 'Máq. e Equip.',
         "arquivo" => '../dashboardg/maquinas.php',
         "icone" => "img/maquinas.svg"
@@ -180,12 +175,6 @@ $menu = [ //array do menu //aqui
         <main class ="content">
             <div class="content-head">
                 <h1>Funcionários</h1>
-                <button type="button" class="btn-primary" id="btn-novo"> <!--Abre o modal de cadastro (criar.php)-->
-                    <span class = "icon-plus">
-                        <img src="img/plus.svg" alt="+" class="plus">
-                    </span>
-                    <span>Novo Registro</span>
-                </button>
             </div>
             
         <!--Filtros-->
@@ -231,18 +220,6 @@ $menu = [ //array do menu //aqui
                             <td class="col-cargo"><?= htmlspecialchars($f['cargo'] ?? '-') ?></td>
                             <td class="col-setor"><?= htmlspecialchars($f['setor'] ?? '-') ?></td>
                             <td class="actions">
-                                <!--Os data-* levam os dados da linha para o modal de edição-->
-                                <button type="button" class="btn-editar" aria-label="Editar" title="Editar"
-                                    data-id="<?= (int) $f['id'] ?>"
-                                    data-tipo="<?= htmlspecialchars($f['tipo']) ?>"
-                                    data-nome="<?= htmlspecialchars($f['nome']) ?>"
-                                    data-email="<?= htmlspecialchars($f['email'] ?? '') ?>"
-                                    data-telefone="<?= htmlspecialchars($f['telefone'] ?? '') ?>"
-                                    data-cargo="<?= htmlspecialchars((string) ($f['id_cargo'] ?? '')) ?>"
-                                    data-setor="<?= htmlspecialchars((string) ($f['id_setor'] ?? '')) ?>">
-                                    <img src="img/editar.svg" alt="editar" class="edit">
-                                </button> 
-
                                 <!--Abre o modal com todas as informações da pessoa (dados buscados em detalhes.php)-->
                                 <button type="button" class="btn-detalhes" aria-label="Detalhes" title = "Detalhes"
                                     data-id="<?= (int) $f['id'] ?>"
