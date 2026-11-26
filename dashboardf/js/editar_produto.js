@@ -1,31 +1,24 @@
 /*
- * editar.js
- * Controla o modal de edição da tela de Funcionários:
+ * editar_produto.js
+ * Controla o modal de edição da tela de Produtos:
  *  - abre o modal já preenchido com os dados da linha clicada
- *  - envia as alterações para editar.php (fetch)
+ *  - envia as alterações para editar_produto.php (fetch)
  *  - atualiza a linha da tabela sem recarregar a página
  */
 (function () {
-    const modal    = document.getElementById('modal-editar');
-    const form     = document.getElementById('form-editar');
-    const erro     = document.getElementById('editar-erro');
+    const modal     = document.getElementById('modal-editar');
+    const form      = document.getElementById('form-editar');
+    const erro      = document.getElementById('editar-erro');
     const btnSalvar = document.getElementById('editar-salvar');
-    const tbody    = document.querySelector('.table-card tbody');
+    const tbody     = document.querySelector('.table-card tbody');
 
     if (!modal || !form || !tbody) return;
 
     let linhaAtual = null;   // <tr> que está sendo editada
     let gatilho = null;      // botão que abriu o modal (para devolver o foco)
+    let enviando = false;
 
     /* ---------- utilidades ---------- */
-
-    function formatarTelefone(valor) {
-        const v = valor.replace(/\D/g, '').slice(0, 11);
-        if (v.length > 10) return v.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
-        if (v.length > 6)  return v.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
-        if (v.length > 2)  return v.replace(/(\d{2})(\d{0,5})/, '($1) $2');
-        return v.length ? '(' + v : '';
-    }
 
     function mostrarErro(mensagem, campo) {
         erro.textContent = mensagem;
@@ -53,6 +46,11 @@
         setTimeout(() => el.remove(), 3300);
     }
 
+    /* Estoque: só dígitos */
+    form.elements.estoque.addEventListener('input', (e) => {
+        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 12);
+    });
+
     /* ---------- abrir / fechar ---------- */
 
     function abrirModal(botao) {
@@ -61,21 +59,11 @@
         const d = botao.dataset;
 
         limparErro();
-        form.elements.tipo.value     = d.tipo;
-        form.elements.id.value       = d.id;
-        form.elements.nome.value     = d.nome;
-        form.elements.email.value    = d.email;
-        form.elements.telefone.value = formatarTelefone(d.telefone || '');
-
-        // Administrador não tem cargo/setor editáveis
-        const ehFuncionario = d.tipo === 'funcionario';
-        modal.querySelectorAll('.campo-funcionario').forEach(el => { el.hidden = !ehFuncionario; });
-        form.elements.id_cargo.disabled = !ehFuncionario;
-        form.elements.id_setor.disabled = !ehFuncionario;
-        if (ehFuncionario) {
-            form.elements.id_cargo.value = d.cargo;
-            form.elements.id_setor.value = d.setor;
-        }
+        form.elements.id.value            = d.id;
+        form.elements.nome.value          = d.nome;
+        form.elements.id_categoria.value  = d.categoria;
+        form.elements.estoque.value       = d.estoque;
+        form.elements.data_producao.value = d.producao;
 
         modal.hidden = false;
         document.body.classList.add('modal-aberto');
@@ -83,6 +71,7 @@
     }
 
     function fecharModal() {
+        if (enviando) return;
         modal.hidden = true;
         document.body.classList.remove('modal-aberto');
         if (gatilho) gatilho.focus();
@@ -94,8 +83,8 @@
         if (botao) abrirModal(botao);
     });
 
+    // Fecha pelo fundo escuro ou pelos botões com data-fechar
     modal.addEventListener('click', (e) => {
-        // clique no fundo escuro ou nos botões com data-fechar
         if (e.target === modal || e.target.closest('[data-fechar]')) fecharModal();
     });
 
@@ -103,14 +92,11 @@
         if (e.key === 'Escape' && !modal.hidden) fecharModal();
     });
 
-    form.elements.telefone.addEventListener('input', (e) => {
-        e.target.value = formatarTelefone(e.target.value);
-    });
-
     /* ---------- salvar ---------- */
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        if (enviando) return;
         limparErro();
 
         // validação rápida no navegador (o servidor valida de novo)
@@ -119,11 +105,22 @@
             return;
         }
 
+        if (form.elements.nome.value.trim().length < 3) {
+            mostrarErro('O nome deve ter pelo menos 3 caracteres.', 'nome');
+            return;
+        }
+
+        if (!/^\d+$/.test(form.elements.estoque.value)) {
+            mostrarErro('Informe o estoque com números inteiros (0 ou mais).', 'estoque');
+            return;
+        }
+
+        enviando = true;
         btnSalvar.disabled = true;
         btnSalvar.textContent = 'Salvando...';
 
         try {
-            const resposta = await fetch('editar.php', {
+            const resposta = await fetch('editar_produto.php', {
                 method: 'POST',
                 body: new FormData(form),
                 headers: { 'Accept': 'application/json' }
@@ -136,29 +133,34 @@
             }
 
             atualizarLinha(dados);
+            enviando = false;
             fecharModal();
             toast(dados.mensagem, 'ok');
         } catch (err) {
             mostrarErro('Não foi possível se conectar ao servidor. Tente novamente.');
         } finally {
+            enviando = false;
             btnSalvar.disabled = false;
             btnSalvar.textContent = 'Salvar';
         }
     });
 
-    /* Atualiza a linha da tabela e os data-attributes do botão com os novos valores */
+    /* Atualiza a linha da tabela e os data-attributes dos botões com os novos valores */
     function atualizarLinha(dados) {
         if (!linhaAtual) return;
 
-        linhaAtual.querySelector('.col-nome').textContent  = dados.nome;
-        linhaAtual.querySelector('.col-cargo').textContent = dados.cargo;
-        linhaAtual.querySelector('.col-setor').textContent = dados.setor;
+        linhaAtual.querySelector('.col-nome').textContent    = dados.nome;
+        linhaAtual.querySelector('.col-producao').textContent = dados.producao;
+        linhaAtual.querySelector('.col-estoque').textContent  = dados.estoque;
+        linhaAtual.dataset.categoria = dados.id_categoria; // o filtro de categoria lê este valor
 
         const botao = linhaAtual.querySelector('.btn-editar');
-        botao.dataset.nome     = dados.nome;
-        botao.dataset.email    = dados.email;
-        botao.dataset.telefone = dados.telefone;
-        if (dados.id_cargo) botao.dataset.cargo = dados.id_cargo;
-        if (dados.id_setor) botao.dataset.setor = dados.id_setor;
+        botao.dataset.nome      = dados.nome;
+        botao.dataset.categoria = dados.id_categoria;
+        botao.dataset.estoque   = dados.estoque;
+        botao.dataset.producao  = dados.data_producao;
+
+        const inativar = linhaAtual.querySelector('.btn-inativar');
+        if (inativar) inativar.dataset.nome = dados.nome;
     }
 })();

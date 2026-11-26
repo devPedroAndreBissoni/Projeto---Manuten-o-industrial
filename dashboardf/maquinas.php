@@ -17,12 +17,15 @@ $csrf = $_SESSION['csrf_token'];
    A sessão (usuario_id / usuario_tipo) é gravada pelo login; o bloco temporário que
    simula o login continua só no index.php e deve ser apagado de lá quando o login existir.
    Os nomes de tabela/coluna vêm desta lista fixa, nunca de dados digitados. */
+require_once 'resolver_usuario.php';
+resolverUsuarioSessao($pdo); // garante usuario_id/usuario_tipo na sessão
+
 $tabelasUsuario = [
     'funcionario'   => ['funcionario',   'nome_funcionario',   'id_funcionario'],
     'administrador' => ['administrador', 'nome_administrador', 'id_administrador'],
     'gerente'       => ['gerente',       'nome_gerente',       'id_gerente'],
 ];
-$nomeUsuario = 'Usuário';
+$nomeUsuario = $_SESSION['nome'] ?? 'Usuário'; // reserva: nome gravado pelo login
 $tipoUsuario = $_SESSION['usuario_tipo'] ?? '';
 if (isset($tabelasUsuario[$tipoUsuario])) {
     [$tabU, $colNome, $colId] = $tabelasUsuario[$tipoUsuario];
@@ -282,6 +285,9 @@ $menu = [ //array do menu (igual ao do index.php)
                     <h3>Ordens de serviço</h3>
                     <ul class="detalhes-lista" id="detalhes-os"></ul>
                 </section>
+                <div 
+                    class="detalhes-grafico" id="detalhes-grafico">
+                </div>
             </div>
         </div>
 
@@ -461,9 +467,50 @@ $menu = [ //array do menu (igual ao do index.php)
         </form>
     </div>
 </div>
+<!--Modal de histórico da máquina (js/historico_maquina.js)-->
+<div class="modal" id="modal-hm" role="dialog" aria-modal="true" aria-labelledby="hm-titulo" hidden>
+    <div class="modal-card largo">
+        <div class="modal-head">
+            <h2 id="hm-titulo">Histórico da máquina</h2>
+            <button type="button" class="modal-close" data-fechar aria-label="Fechar">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <input type="hidden" id="hm-csrf" value="<?= htmlspecialchars($csrf) ?>">
+
+            <p class="detalhes-carregando" id="hm-carregando">Carregando...</p>
+            <p class="modal-erro" id="hm-erro" role="alert" hidden></p>
+
+            <div id="hm-conteudo" class="detalhes-conteudo" hidden>
+                <div class="detalhes-topo">
+                    <h3 class="detalhes-nome" id="hm-nome"></h3>
+                    <span class="badge" id="hm-tipo"></span>
+                </div>
+
+                <section class="detalhes-secao">
+                    <h3>Tempo médio entre falhas</h3>
+                    <div class="hm-grafico" id="hm-grafico"></div>
+                </section>
+
+                <section class="detalhes-secao">
+                    <h3>Quem atendeu esta máquina</h3>
+                    <ul class="detalhes-lista" id="hm-lista"></ul>
+                </section>
+            </div>
+        </div>
+
+        <div class="modal-foot">
+            <button type="button" class="btn-secondary" data-fechar>Fechar</button>
+        </div>
+    </div>
+</div>
 
 <?php $maquinasOrdem = $maquinas; include 'modal_ordem.php'; ?> <!--Modal de nova ordem de serviço (botão da chave)-->
 
+<script src="js/historico_maquina.js"></script>
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="js/grafico_maquina.js"></script>
+<script src="js/listar_maquinas.js"></script>
 <script src="js/editar_maquina.js"></script>
 <script src="js/menu.js"></script>
 <script src="js/inativar.js"></script>

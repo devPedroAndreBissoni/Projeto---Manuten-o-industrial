@@ -33,6 +33,10 @@ if ($tokenSessao === '' || !hash_equals($tokenSessao, $tokenEnviado)) {
     responder(false, 'Sessão expirada. Recarregue a página e tente novamente.', [], 403);
 }
 
+/* Quem está logado define o que pode ser alterado */
+$tipoLogado = $_SESSION['usuario_tipo'] ?? '';
+$podeSetor  = in_array($tipoLogado, ['administrador', 'gerente'], true);
+
 /* 3) Leitura e validação dos campos */
 $tipo     = $_POST['tipo'] ?? '';
 $id       = filter_var($_POST['id'] ?? '', FILTER_VALIDATE_INT);
@@ -40,7 +44,8 @@ $nome     = trim($_POST['nome'] ?? '');
 $email    = trim($_POST['email'] ?? '');
 $telefone = preg_replace('/\D/', '', $_POST['telefone'] ?? ''); // só dígitos
 
-if (!in_array($tipo, ['funcionario', 'administrador'], true) || !$id) {
+
+if (!in_array($tipo, ['funcionario', 'administrador', 'gerente'], true) || !$id) {
     responder(false, 'Registro inválido.', [], 422);
 }
 
@@ -60,23 +65,37 @@ try {
     /* 4) E-mail não pode estar em uso por OUTRO registro */
     $idFuncionario   = $tipo === 'funcionario'   ? $id : 0;
     $idAdministrador = $tipo === 'administrador' ? $id : 0;
+    $idGerente       = $tipo === 'gerente'       ? $id : 0;
 
     $dup = $pdo->prepare(
         "SELECT
             (SELECT COUNT(*) FROM funcionario   WHERE email_funcionario   = :e1 AND id_funcionario   <> :idf) +
-            (SELECT COUNT(*) FROM administrador WHERE email_administrador = :e2 AND id_administrador <> :ida)
+            (SELECT COUNT(*) FROM administrador WHERE email_administrador = :e2 AND id_administrador <> :ida) +
+            (SELECT COUNT(*) FROM gerente       WHERE email_gerente       = :e3 AND id_gerente       <> :idg)
             AS total"
     );
-    $dup->execute([':e1' => $email, ':idf' => $idFuncionario, ':e2' => $email, ':ida' => $idAdministrador]);
-    if ((int) $dup->fetchColumn() > 0) {
-        responder(false, 'Este e-mail já está sendo usado por outro registro.', ['campo' => 'email'], 422);
-    }
+    $dup->execute([
+        ':e1' => $email, ':idf' => $idFuncionario,
+        ':e2' => $email, ':ida' => $idAdministrador,
+        ':e3' => $email, ':idg' => $idGerente,
+    ]);
 
     /* 5) UPDATE conforme o tipo (as duas tabelas são diferentes) */
     if ($tipo === 'funcionario') {
         $idCargo = filter_var($_POST['id_cargo'] ?? '', FILTER_VALIDATE_INT);
-        $idSetor = filter_var($_POST['id_setor'] ?? '', FILTER_VALIDATE_INT);
 
+        if ($podeSetor) {
+            $idSetor = filter_var($_POST['id_setor'] ?? '', FILTER_VALIDATE_INT);
+        } else {
+            // sem permissão: ignora o que veio do navegador e mantém o setor atual do banco
+            $atual = $pdo->prepare("SELECT id_setor FROM funcionario WHERE id_funcionario = ?");
+            $atual->execute([$id]);
+            $idSetor = (int) $atual->fetchColumn();
+        }
+
+        if (!$idCargo || !$idSetor) {
+            responder(false, 'Selecione o cargo e o setor.', [], 422);
+        }
         if (!$idCargo || !$idSetor) {
             responder(false, 'Selecione o cargo e o setor.', [], 422);
         }
@@ -124,23 +143,37 @@ try {
     }
 
     /* Administrador: cargo e setor são fixos, só edita dados pessoais */
-    $up = $pdo->prepare(
-        "UPDATE administrador
-            SET nome_administrador     = :nome,
-                email_administrador    = :email,
-                telefone_administrador = :tel
-          WHERE id_administrador = :id"
-    );
-    $up->execute([':nome' => $nome, ':email' => $email, ':tel' => $telefone, ':id' => $id]);
+    if ($tipo === 'gerente') {
+        if (!$podeSetor) {
+            responder(false, 'Você não tem permissão para editar gerentes.', [], 403);
+        }
+        $idSetor = filter_var($_POST['id_setor'] ?? '', FILTER_VALIDATE_INT);
+        $s = $pdo->prepare("SELECT nome_setor FROM setor WHERE id_setor = ?");
+        $s->execute([$idSetor]);
+        $nomeSetor = $s->fetchColumn();
+        if ($nomeSetor === false) {
+            responder(false, 'Setor inexistente.', [], 422);
+        }
 
-    responder(true, 'Administrador atualizado com sucesso!', [
-        'nome'     => $nome,
-        'cargo'    => 'Administrador',
-        'setor'    => 'Geral',
-        'email'    => $email,
-        'telefone' => $telefone,
-    ]);
+        $up = $pdo->prepare(
+            "UPDATE gerente
+                SET nome_gerente     = :nome,
+                    email_gerente    = :email,
+                    telefone_gerente = :tel,
+                    id_setor         = :setor
+              WHERE id_gerente = :id"
+        );
+        $up->execute([':nome' => $nome, ':email' => $email, ':tel' => $telefone, ':setor' => $idSetor, ':id' => $id]);
 
+        responder(true, 'Gerente atualizado com sucesso!', [
+            'nome'     => $nome,
+            'cargo'    => 'Gerente',
+            'setor'    => $nomeSetor,
+            'id_setor' => $idSetor,
+            'email'    => $email,
+            'telefone' => $telefone,
+        ]);
+    }
 } catch (PDOException $e) {
     error_log('Erro ao editar registro: ' . $e->getMessage());
     responder(false, 'Erro ao salvar no banco de dados.', [], 500);

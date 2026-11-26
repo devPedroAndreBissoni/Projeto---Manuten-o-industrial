@@ -12,23 +12,23 @@ if (empty($_SESSION['csrf_token'])) {
 }
 $csrf = $_SESSION['csrf_token'];
 
-/* ===== TEMPORÁRIO: simula o usuário logado até existir a tela de login =====
-   O login de verdade deve gravar estas duas chaves e este bloco deve ser APAGADO.
-   tipo: 'administrador', 'gerente' ou 'funcionario' | id: id na tabela correspondente */
-if (empty($_SESSION['usuario_id'])) {
-    $_SESSION['usuario_id']   = 1;
-    $_SESSION['usuario_tipo'] = 'administrador';
-}
-/* ===== fim do bloco temporário ===== */
+/* O login grava $_SESSION['usuario_id'] e $_SESSION['usuario_tipo']
+   ('administrador', 'gerente' ou 'funcionario'). O antigo bloco temporário que
+   forçava o administrador 1 foi removido: era ele que mostrava sempre o mesmo nome. */
 
 /* Nome de quem está logado (mostrado no topo). Reaproveita o $pdo que já vem do conexao.php.
    Os nomes de tabela/coluna vêm desta lista fixa, nunca de dados digitados. */
+require_once __DIR__ . '/resolver_usuario.php';
+resolverUsuarioSessao($pdo); // garante usuario_id/usuario_tipo na sessão
+
+
+
 $tabelasUsuario = [
     'funcionario'   => ['funcionario',   'nome_funcionario',   'id_funcionario'],
     'administrador' => ['administrador', 'nome_administrador', 'id_administrador'],
     'gerente'       => ['gerente',       'nome_gerente',       'id_gerente'],
 ];
-$nomeUsuario = 'Usuário';
+$nomeUsuario = $_SESSION['nome'] ?? 'Usuário'; // reserva: nome gravado pelo login
 $tipoUsuario = $_SESSION['usuario_tipo'] ?? '';
 if (isset($tabelasUsuario[$tipoUsuario])) {
     [$tabU, $colNome, $colId] = $tabelasUsuario[$tipoUsuario];
@@ -36,6 +36,8 @@ if (isset($tabelasUsuario[$tipoUsuario])) {
     $stU->execute([':id' => (int) ($_SESSION['usuario_id'] ?? 0)]);
     $nomeUsuario = $stU->fetchColumn() ?: $nomeUsuario;
 }
+
+$podeEditarSetor = in_array($tipoUsuario, ['administrador', 'gerente'], true);
 
 /* Agora a consulta também traz o id, o tipo (funcionario/administrador) e os dados
    necessários para preencher o modal de edição. Como são tabelas diferentes, o "tipo"
@@ -54,6 +56,7 @@ $sql = "SELECT f.id_funcionario       AS id,
         INNER JOIN cargo c ON c.id_cargo = f.id_cargo /*INNER JOIN só pode ser usado para tabelas diferentes*/
         INNER JOIN setor s ON s.id_setor = f.id_setor
         WHERE f.ativo_funcionario = 1 /*Inativos continuam no banco, só não aparecem aqui*/
+          AND NOT (:tipo_f = 'funcionario' AND f.id_funcionario = :id_f) /*não mostra quem está logado*/
 
         UNION ALL /*UNION ALL -> junta todas as tabelas em uma, puxando as informações das outras duas para a principal*/
 
@@ -62,10 +65,31 @@ $sql = "SELECT f.id_funcionario       AS id,
                NULL, NULL, 'Administrador', 'Geral', 'administrador'
         FROM administrador a
         WHERE a.ativo_administrador = 1
+          AND NOT (:tipo_a = 'administrador' AND a.id_administrador = :id_a) /*não mostra quem está logado*/
+
+        UNION ALL /*gerentes agora têm setor próprio (coluna id_setor na tabela gerente)*/
+
+        SELECT g.id_gerente, 'gerente', g.nome_gerente,
+               g.email_gerente, g.telefone_gerente,
+               NULL, g.id_setor, 'Gerente', s2.nome_setor, 'gerente'
+        FROM gerente g
+        INNER JOIN setor s2 ON s2.id_setor = g.id_setor
+        WHERE g.ativo_gerente = 1
+          AND NOT (:tipo_g = 'gerente' AND g.id_gerente = :id_g) /*não mostra quem está logado*/
 
         ORDER BY nome";
-        
-$funcionarios = $pdo->query($sql)->fetchAll();
+
+/* O id do usuário logado vem da sessão; o tipo diz em qual tabela ele está (ids se repetem entre tabelas) */
+$stLista = $pdo->prepare($sql);
+$stLista->execute([
+    ':tipo_f' => $tipoUsuario,
+    ':id_f'   => (int) ($_SESSION['usuario_id'] ?? 0),
+    ':tipo_a' => $tipoUsuario,
+    ':id_a'   => (int) ($_SESSION['usuario_id'] ?? 0),
+    ':tipo_g' => $tipoUsuario,
+    ':id_g'   => (int) ($_SESSION['usuario_id'] ?? 0),
+]);
+$funcionarios = $stLista->fetchAll();
 
 $setores = $pdo->query("SELECT id_setor, nome_setor FROM setor")->fetchAll();
 
@@ -109,7 +133,7 @@ $menu = [ //array do menu //aqui
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Gerente</title>
+    <title>Dashboard Admin</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -171,7 +195,7 @@ $menu = [ //array do menu //aqui
                         <input type="text" id="filtro-nome" placeholder="Buscar por Nome..." autocomplete="off" aria-label="Buscar por nome">
                 </label>
 
-                <label class="field"> Setor:
+                <label class="field campo-setor"> Setor:
                 <select name="setor" id="filtro-setor"> <!--aqui eu puxei o setor que eu chamei lá em cima para vincular ao banco para ter opções que realmente existam no banco de dados-->
                 <option value="">Todos</option>
                 <?php foreach ($setores as $s): ?>
@@ -297,6 +321,8 @@ $menu = [ //array do menu //aqui
     </div>
 </div>
 
+<!--Modal de detalhes-->
+<!--Modal de edição-->
 <!--Modal de detalhes-->
 <div class="modal" id="modal-detalhes" role="dialog" aria-modal="true" aria-labelledby="detalhes-titulo" hidden>
     <div class="modal-card largo">
